@@ -90,8 +90,8 @@ return `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margi
 <select onchange="cur=+this.value;draw()">${D.map((_,l)=>`<option value="${l}" ${l==cur?'selected':''}>${ln(l)}</option>`).join('')}</select>
 <div class="card" style="flex:1;min-width:240px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="mu">Supervisor</div><b>${d.sup||'—'}</b><div>${lb(p)}</div></div><div class="big">${f(p)}</div></div></div>
 <div class="grid">${Z.map((z,zi)=>{const q=zp(cur,zi),v=lvl(q)[0];return `<div class="card"><div class="zh"><div><b>${z}</b><div class="mu">Team Leader: ${d.tl[zi]||'—'}</div><div class="mu">Issue ปิดแล้ว ${ist(cur,zi).c}/${ist(cur,zi).t}</div><div>${lb(q)}</div></div><div class="big">${f(q)}</div></div>
-${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="row"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x||0}%"></i></div><input type="number" min="0" max="100" value="${x==null?'':x}" onchange="setv(${zi},${si},this.value)"></div>`}).join('')}</div>`}).join('')}</div>
-${legend()}<div class="mu">แก้ตัวเลขคะแนน (% ต่อหัวข้อ 5S) ระบบคำนวณ % พื้นที่ → TL → Sup ให้อัตโนมัติ</div>`}
+${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="row"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x||0}%"></i></div><input type="number" min="0" max="100" value="${x==null?'':x}" disabled title="แก้คะแนนที่ Google Sheet แท็บ Scores"></div>`}).join('')}</div>`}).join('')}</div>
+${legend()}<div class="mu">คะแนน 5S และชื่อ Sup/TL ดึงจาก Google Sheet แท็บ Scores (แก้ที่ Sheet ระบบอัปเดตเองทุก 30 วินาที) · % พื้นที่ → TL → Sup คำนวณอัตโนมัติ · Issue ที่บันทึกใน Dashboard จะส่งไปแท็บ Issues</div>`}
 function setv(z,s,v){D[cur].s[z][s]=(v===''||v==null)?null:Math.max(0,Math.min(100,+v||0));save(cur);draw()}
 function rk(){
 const tl=[];D.forEach((d,l)=>Z.forEach((z,zi)=>tl.push({l,z,zi,n:d.tl[zi]||'—',p:zp(l,zi)})));
@@ -188,9 +188,9 @@ function stI(id,st){const i=ISS.find(x=>x.id==id);i.st=st;saveI(i);draw()}
 
 const SHEET_URL='https://docs.google.com/spreadsheets/d/1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A/edit';
 let SH={ek:'sc',ik:'sc',msg:''};
-const SHD=['Line','Zone','Supervisor','TeamLeader','1S','2S','3S','4S','5S','Area%'],IH=['ID','Line','Zone','5S','Severity','Description','Auditor','DateFound','Due','Status','Reply','RepliedBy','Photo','ReplyPhoto'];
+const SHD=['Line','Zone','Supervisor','TeamLeader','1S','2S','3S','4S','5S','Area%'],IH=['ID','Line','Zone','Supervisor','TeamLeader','5S','Severity','Description','Auditor','DateFound','Due','Status','Reply','RepliedBy','Photo','ReplyPhoto'];
 function scoreRows(){const r=[SHD];D.forEach((d,l)=>Z.forEach((z,zi)=>r.push([l+1,z,d.sup,d.tl[zi],...d.s[zi],zp(l,zi)==null?'':+zp(l,zi).toFixed(1)])));return r}
-function issueRows(){return [IH,...ISS.slice().sort((a,b)=>a.id-b.id).map(i=>[i.id,i.l+1,Z[i.z],(i.s+1)+'S',i.sev,i.desc,i.auditor||'',i.date,i.due,i.st,i.reply||'',i.by||'',dlink(i.img),dlink(i.rimg)])]}
+function issueRows(){return [IH,...ISS.slice().sort((a,b)=>a.id-b.id).map(i=>[i.id,i.l+1,Z[i.z],D[i.l].sup||'',D[i.l].tl[i.z]||'',(i.s+1)+'S',i.sev,i.desc,i.auditor||'',i.date,i.due,i.st,i.reply||'',i.by||'',dlink(i.img),dlink(i.rimg)])]}
 const q=v=>{v=String(v==null?'':v);return /[",\n\t]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
 const toText=(rows,sep)=>rows.map(r=>r.map(sep=='\t'?v=>String(v==null?'':v).replace(/[\t\r\n]/g,' '):q).join(sep)).join('\n');
 function parseCSV(t){t=t.replace(/^\uFEFF/,'');const sep=(t.split('\n')[0]||'').includes('\t')?'\t':',';const rows=[];let r=[],c='',inq=false;
@@ -274,7 +274,7 @@ try{localStorage.setItem('s5api_u',u)}catch(e){}
 MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u)syncOn();else setSy('กรอก Web App URL')}
 function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
-const SK={sc:{tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:N1000',rows:()=>issueRows()}};
+const SK={sc:{ro:true,tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:P1000',rows:()=>issueRows()}};
 let SY={loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
 const nrm=rows=>JSON.stringify(rows.map(r=>{r=r.map(c=>String(c==null?'':c));while(r.length&&r[r.length-1]==='')r.pop();return r}).filter(r=>r.length));
 function setSy(t){if(t!=null)SY.st=t;const e=document.getElementById('sy');if(e)e.textContent=SY.st;const b=document.getElementById('syb');if(b)b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet'}
@@ -285,7 +285,7 @@ if(!a){const t=(res.content||[]).find(c=>c.type=='text');if(t){try{a=v(JSON.pars
 const tnow=()=>new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
 const errT=e=>e&&(e.code=='not_in_manifest'||e.code=='not_granted'||e.code=='consent_required')?'ยังไม่ได้รับอนุญาตให้ใช้ Google Sheets กับหน้านี้ — กด "จัดการสิทธิ์" แล้วเปิดสิทธิ์ Google Sheets':e&&e.code=='needs_reauth'?'ต้องเชื่อมต่อ Google Sheets ใหม่':e&&e.code=='server_not_connected'?'ยังไม่ได้เชื่อมต่อ Google Sheets':'ซิงก์ผิดพลาด ('+((e&&(e.code||e.message))||'?')+')';
 function schedPush(k){if(!SY.on||SY.importing)return;if(k)SY.dirty[k]=1;clearTimeout(SY.t);SY.t=setTimeout(()=>{push('sc');push('is')},1500)}
-async function push(k){if(!SY.on||!SY.mcp||!SY.loaded[k]||SY.block[k]||!SY.dirty[k])return;const rows=SK[k].rows(),h=nrm(rows);if(h==SY.hs[k])return;
+async function push(k){if(SK[k].ro)return;if(!SY.on||!SY.mcp||!SY.loaded[k]||SY.block[k]||!SY.dirty[k])return;const rows=SK[k].rows(),h=nrm(rows);if(h==SY.hs[k])return;
 try{const a=await sargs('update_values',{range:SK[k].tab+'!A1:'+String.fromCharCode(64+rows[0].length)+rows.length,values:rows.map(r=>r.map(c=>c==null?'':c))});
 await SY.mcp.callTool(SRV,'update_values',a);SY.hs[k]=h;SY.dirty[k]=0;SY.at[k]=Date.now();try{await SY.mcp.invalidate(SRV,'get_values')}catch(e){}setSy('ซิงก์ล่าสุด '+tnow()+' (ส่งขึ้น Sheet)')}catch(e){setSy(errT(e))}}
 function onEv(k,ev){if(!SY.on)return;if(ev.type=='error'){setSy(errT(ev.error)+(ev.error&&ev.error.message?' · '+ev.error.message:''));showFix(ev.error);return}
@@ -294,6 +294,7 @@ if(vals.length<2){SY.loaded[k]=true;setSy('Sheet แท็บ '+SK[k].tab+' ย�
 const h=nrm(vals);if(h==SY.hs[k]){setSy('ซิงก์ล่าสุด '+tnow());return}
 SY.hs[k]=h;const t=toText(vals,',');SY.importing=true;let m;try{m=k=='sc'?impScores(t):impIssues(t)}finally{SY.importing=false}
 if(/^ไม่พบ/.test(m)){SY.block[k]=true;SY.loaded[k]=true;setSy('รูปแบบแท็บ '+SK[k].tab+' ไม่ตรงกับที่ Dashboard รู้จัก — ปิดการเขียนแท็บนี้เพื่อไม่ทับข้อมูลของคุณ ('+m+')');return}SY.loaded[k]=true;setSy('ซิงก์ล่าสุด '+tnow()+' (รับจาก Sheet) · '+m);
+if(SY.loaded.sc&&SY.loaded.is&&!SY.block.is&&ISS.length&&nrm(SK.is.rows())!=SY.hs.is){SY.dirty.is=1;schedPush()}
 const bz=/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);if(!bz)draw()}
 async function syncOn(){try{SY.mcp=await mcpGet()}catch(e){}
 if(!SY.mcp){setSy(window.claude?'โหมดนี้ใช้ซิงก์ Sheet ไม่ได้':'ยังไม่ได้ตั้งค่า Apps Script — ไปที่แท็บ Export / Import Sheet ข้อ 0');return}
