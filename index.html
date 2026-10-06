@@ -179,8 +179,13 @@ ${list.length?list.map(i=>`<div class="card iss ${i.st}"><div><b>#${i.id} ${ln(i
 ${i.st=='open'?`<textarea id="r${i.id}" rows="2" placeholder="TL ตอบ: สาเหตุ / การแก้ไข" style="margin-top:8px"></textarea><label class="mu" style="display:block;margin-top:6px">รูปถ่ายหลังแก้ไข (บังคับ)<input type="file" accept="image/*" onchange="pickPh('r${i.id}',this)"></label><div id="pv-r${i.id}">${phHTML('r'+i.id)}</div><div class="ib"><button class="btn p" id="bt-r${i.id}" onclick="rep(${i.id})" ${PH['r'+i.id]?'':'disabled'}>ส่งคำตอบ</button><span class="mu" id="hn-r${i.id}" style="${PH['r'+i.id]?'display:none':''}">ต้องแนบรูปก่อนจึงจะส่งคำตอบได้</span></div>`
 :`<div class="card" style="margin-top:8px;background:var(--bg)"><span class="mu">คำตอบของพื้นที่${i.by?' โดย '+esc(i.by):''}:</span><br>${esc(i.reply)}${photoHTML(i.rimg,'รูปหลังแก้ไข')}</div>
 <div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">ตีกลับ</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิดใหม่</button>`}</div>`}
-</div>`).join(''):'<div class="card mu" style="margin-top:10px">ไม่มี Issue ตามตัวกรอง</div>'}
+<div class="ib"><button class="btn" style="color:var(--D)" onclick="delIss(${i.id})">ลบ Issue นี้</button></div></div>`).join(''):'<div class="card mu" style="margin-top:10px">ไม่มี Issue ตามตัวกรอง</div>'}
 <div class="mu" style="margin-top:10px">% ปิด = Issue ที่ Audit ยืนยันปิด ÷ Issue ทั้งหมด · % ตอบกลับ = (ตอบแล้ว + ปิดแล้ว) ÷ ทั้งหมด</div>`}
+function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
+if(!confirm('ลบ Issue #'+id+' ('+ln(i.l)+' · '+Z[i.z]+') ?\nแถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้'))return;
+ISS=ISS.filter(x=>x.id!=id);
+if(DB){try{DB.collection('issues').doc(String(id)).delete().catch(wf)}catch(e){wf(e)}}
+saveI();SY.dirty.is=1;if(SY.on)schedPush('is');else alert('ยังไม่ได้เปิดซิงก์ Sheet จึงลบเฉพาะในเครื่องนี้ (แถวใน Sheet ยังอยู่)');draw()}
 function addIss(){const g=id=>document.getElementById(id).value,t=g('ft').trim();if(!t){alert('กรุณากรอกรายละเอียดปัญหา');return}if(!PH.add){alert('กรุณาแนบรูปถ่ายปัญหาก่อนบันทึก');return}
 const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:+g('fl'),z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;ISS.push(ni);saveI(ni);draw()}
 function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){alert('กรุณากรอกคำตอบ');return}if(!PH['r'+id]){alert('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];i.reply=t;i.by=who();i.st='replied';saveI(i);draw()}
@@ -209,16 +214,17 @@ cs.forEach((c,si)=>{if(c>=0&&String(r[c]).trim()!==''&&!isNaN(+r[c]))D[l].s[z][s
 if(csup>=0&&r[csup].trim())D[l].sup=r[csup].trim();if(ctl>=0&&r[ctl].trim())D[l].tl[z]=r[ctl].trim();ch.add(l);n++});
 ch.forEach(l=>save(l));return 'นำเข้าคะแนน '+n+' แถว อัปเดต '+ch.size+' ไลน์'+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,4).join('; ')+')':'')}
 const stMap={open:'open',replied:'replied',closed:'closed','รอตอบ':'open','ตอบแล้ว':'replied','ปิดแล้ว':'closed','ปิด':'closed'},svMap={high:'สูง',medium:'กลาง',low:'ต่ำ','สูง':'สูง','กลาง':'กลาง','ต่ำ':'ต่ำ'};
-function impIssues(text){const T=readTable(text);if(!T)return 'ไม่พบข้อมูล (ต้องมีหัวตารางและอย่างน้อย 1 แถว)';
+function impIssues(text,prune){const T=readTable(text);if(!T)return 'ไม่พบข้อมูล (ต้องมีหัวตารางและอย่างน้อย 1 แถว)';
 if(T.col('line')<0||T.col('zone')<0||T.col('description')<0)return 'ไม่พบคอลัมน์ Line / Zone / Description';
-const c=n=>T.col(n),g=(r,n)=>c(n)>=0?String(r[c(n)]||'').trim():'';let add=0,upd=0;const bad=[];
+const c=n=>T.col(n),g=(r,n)=>c(n)>=0?String(r[c(n)]||'').trim():'';let add=0,upd=0;const bad=[],seen=new Set();
 T.rows.forEach((r,ri)=>{const l=lIdx(g(r,'line')),z=zIdx(g(r,'zone')),d=g(r,'description');if(l<0||z<0||!d){bad.push('แถว '+(ri+2));return}
-let id=parseInt(g(r,'id'));const ex=id?ISS.find(x=>x.id==id):null;if(!id)id=Math.max(0,...ISS.map(i=>i.id))+1;
+let id=parseInt(g(r,'id'));const ex=id?ISS.find(x=>x.id==id):null;if(!id)id=Math.max(0,...ISS.map(i=>i.id))+1;seen.add(id);
 const sm=g(r,'5s').match(/[1-5]/);
 const o={id,l,z,s:sm?+sm[0]-1:0,sev:svMap[nz(g(r,'severity'))]||'กลาง',desc:d,auditor:g(r,'auditor'),date:g(r,'datefound')||todayS(),due:g(r,'due')||addD(7),st:stMap[nz(g(r,'status'))]||'open',reply:g(r,'reply')};
 const by=g(r,'repliedby');if(by)o.by=by;const gid=u=>{const m=u.match(/\/d\/([\w-]+)/)||u.match(/[?&]id=([\w-]+)/);return m?'d:'+m[1]:''};const g1=gid(g(r,'photo')),g2=gid(g(r,'replyphoto'));if(g1)o.img=g1;if(g2)o.rimg=g2;
 if(ex){Object.assign(ex,o);saveI(ex);upd++}else{ISS.push(o);saveI(o);add++}});
-return 'นำเข้า Issue: เพิ่มใหม่ '+add+' · อัปเดต '+upd+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,5).join(', ')+')':'')}
+let pr=0;if(prune){const keep=ISS.filter(x=>seen.has(x.id));pr=ISS.length-keep.length;if(pr){ISS=keep;saveI()}}
+return 'นำเข้า Issue: เพิ่มใหม่ '+add+' · อัปเดต '+upd+(pr?' · ลบที่ไม่มีใน Sheet '+pr:'')+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,5).join(', ')+')':'')}
 function sh(){
 const ex=toText(SH.ek=='sc'?scoreRows():issueRows(),'\t');
 const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 5S (52 พื้นที่)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
@@ -275,7 +281,7 @@ MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u)syncOn();else se
 function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
 const SK={sc:{ro:true,tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:P1000',rows:()=>issueRows()}};
-let SY={loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
+let SY={n:{},loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
 const nrm=rows=>JSON.stringify(rows.map(r=>{r=r.map(c=>String(c==null?'':c));while(r.length&&r[r.length-1]==='')r.pop();return r}).filter(r=>r.length));
 function setSy(t){if(t!=null)SY.st=t;const e=document.getElementById('sy');if(e)e.textContent=SY.st;const b=document.getElementById('syb');if(b)b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet'}
 async function sargs(tool,o){if(!SY.keys[tool]){try{const d=await SY.mcp.describeTool(SRV,tool);SY.keys[tool]=Object.keys((d.inputSchema&&d.inputSchema.properties)||{})}catch(e){SY.keys[tool]=['spreadsheetId']}}
@@ -286,13 +292,16 @@ const tnow=()=>new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-d
 const errT=e=>e&&(e.code=='not_in_manifest'||e.code=='not_granted'||e.code=='consent_required')?'ยังไม่ได้รับอนุญาตให้ใช้ Google Sheets กับหน้านี้ — กด "จัดการสิทธิ์" แล้วเปิดสิทธิ์ Google Sheets':e&&e.code=='needs_reauth'?'ต้องเชื่อมต่อ Google Sheets ใหม่':e&&e.code=='server_not_connected'?'ยังไม่ได้เชื่อมต่อ Google Sheets':'ซิงก์ผิดพลาด ('+((e&&(e.code||e.message))||'?')+')';
 function schedPush(k){if(!SY.on||SY.importing)return;if(k)SY.dirty[k]=1;clearTimeout(SY.t);SY.t=setTimeout(()=>{push('sc');push('is')},1500)}
 async function push(k){if(SK[k].ro)return;if(!SY.on||!SY.mcp||!SY.loaded[k]||SY.block[k]||!SY.dirty[k])return;const rows=SK[k].rows(),h=nrm(rows);if(h==SY.hs[k])return;
-try{const a=await sargs('update_values',{range:SK[k].tab+'!A1:'+String.fromCharCode(64+rows[0].length)+rows.length,values:rows.map(r=>r.map(c=>c==null?'':c))});
-await SY.mcp.callTool(SRV,'update_values',a);SY.hs[k]=h;SY.dirty[k]=0;SY.at[k]=Date.now();try{await SY.mcp.invalidate(SRV,'get_values')}catch(e){}setSy('ซิงก์ล่าสุด '+tnow()+' (ส่งขึ้น Sheet)')}catch(e){setSy(errT(e))}}
+try{const prev=SY.n[k]||0,w=rows[0].length,out=rows.length<prev?rows.concat(Array.from({length:prev-rows.length},()=>Array(w).fill(''))):rows;
+const a=await sargs('update_values',{range:SK[k].tab+'!A1:'+String.fromCharCode(64+w)+out.length,values:out.map(r=>r.map(c=>c==null?'':c))});
+await SY.mcp.callTool(SRV,'update_values',a);SY.hs[k]=h;SY.n[k]=rows.length;SY.dirty[k]=0;SY.at[k]=Date.now();try{await SY.mcp.invalidate(SRV,'get_values')}catch(e){}setSy('ซิงก์ล่าสุด '+tnow()+' (ส่งขึ้น Sheet)')}catch(e){setSy(errT(e))}}
 function onEv(k,ev){if(!SY.on)return;if(ev.type=='error'){setSy(errT(ev.error)+(ev.error&&ev.error.message?' · '+ev.error.message:''));showFix(ev.error);return}
 if(Date.now()-SY.at[k]<8000)return;const vals=valsOf(ev.result);
-if(vals.length<2){SY.loaded[k]=true;setSy('Sheet แท็บ '+SK[k].tab+' ยังว่าง — ไม่เขียนทับ รอให้มีการแก้ไขจริงจาก Dashboard');return}
+if(vals.length<2){SY.loaded[k]=true;SY.n[k]=vals.length;SY.hs[k]=nrm(vals);let note='';
+if(k=='is'&&!DB&&!SY.dirty.is&&ISS.length){SY.importing=true;try{ISS=[];saveI()}finally{SY.importing=false}note=' · ล้าง Issue ที่ค้างในเครื่องนี้แล้ว';const bz0=/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);if(!bz0)draw()}
+setSy('Sheet แท็บ '+SK[k].tab+' ว่าง — ไม่เขียนทับ'+note);return}
 const h=nrm(vals);if(h==SY.hs[k]){setSy('ซิงก์ล่าสุด '+tnow());return}
-SY.hs[k]=h;const t=toText(vals,',');SY.importing=true;let m;try{m=k=='sc'?impScores(t):impIssues(t)}finally{SY.importing=false}
+SY.hs[k]=h;SY.n[k]=vals.length;const t=toText(vals,',');SY.importing=true;let m;try{m=k=='sc'?impScores(t):impIssues(t,!DB&&!SY.dirty.is)}finally{SY.importing=false}
 if(/^ไม่พบ/.test(m)){SY.block[k]=true;SY.loaded[k]=true;setSy('รูปแบบแท็บ '+SK[k].tab+' ไม่ตรงกับที่ Dashboard รู้จัก — ปิดการเขียนแท็บนี้เพื่อไม่ทับข้อมูลของคุณ ('+m+')');return}SY.loaded[k]=true;setSy('ซิงก์ล่าสุด '+tnow()+' (รับจาก Sheet) · '+m);
 if(SY.loaded.sc&&SY.loaded.is&&!SY.block.is&&ISS.length&&nrm(SK.is.rows())!=SY.hs.is){SY.dirty.is=1;schedPush()}
 const bz=/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);if(!bz)draw()}
