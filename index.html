@@ -181,7 +181,16 @@ ${i.st=='open'?`<textarea id="r${i.id}" rows="2" placeholder="TL ตอบ: ส�
 <div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">ตีกลับ</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิดใหม่</button>`}</div>`}
 <div class="ib"><button class="btn" style="color:var(--D)" onclick="delIss(${i.id})">ลบ Issue นี้</button></div></div>`).join(''):'<div class="card mu" style="margin-top:10px">ไม่มี Issue ตามตัวกรอง</div>'}
 <div class="mu" style="margin-top:10px">% ปิด = Issue ที่ Audit ยืนยันปิด ÷ Issue ทั้งหมด · % ตอบกลับ = (ตอบแล้ว + ปิดแล้ว) ÷ ทั้งหมด</div>`}
-function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
+const DEL_HASH='74cf43e9bfa9d9c486cc921ae9381bb88498b414f6e3b968b1606e705eacbc2b';
+const sha=async t=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')};
+function askPw(msg){return new Promise(ok=>{const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:99';
+d.innerHTML='<div class="card" style="width:min(340px,92%)"><b>'+msg+'</b><input type="password" id="pwi" autocomplete="off" style="width:100%;margin-top:10px;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)"><div class="ib"><button class="btn p" id="pwo">ยืนยัน</button><button class="btn" id="pwc">ยกเลิก</button></div></div>';
+document.body.appendChild(d);const i=d.querySelector('#pwi');i.focus();const done=v=>{d.remove();ok(v)};
+d.querySelector('#pwo').onclick=()=>done(i.value);d.querySelector('#pwc').onclick=()=>done(null);i.onkeydown=e=>{if(e.key=='Enter')done(i.value);if(e.key=='Escape')done(null)}})}
+async function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
+const pw=await askPw('กรอกรหัสเพื่อลบ Issue #'+id);if(pw==null)return;
+let okp=false;try{okp=(await sha(pw))===DEL_HASH}catch(e){alert('เบราว์เซอร์นี้ตรวจรหัสไม่ได้ (ต้องเปิดผ่าน https)');return}
+if(!okp){alert('รหัสไม่ถูกต้อง');return}
 if(!confirm('ลบ Issue #'+id+' ('+ln(i.l)+' · '+Z[i.z]+') ?\nแถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้'))return;
 ISS=ISS.filter(x=>x.id!=id);
 if(DB){try{DB.collection('issues').doc(String(id)).delete().catch(wf)}catch(e){wf(e)}}
