@@ -24,7 +24,7 @@ th,td{padding:8px 10px;text-align:center;border-bottom:1px solid var(--bd);white
 th{font-size:12px;color:var(--mu);font-weight:600}td:first-child,th:first-child,td.l,th.l{text-align:left}
 tbody tr.go{cursor:pointer}tbody tr.go:hover{background:var(--bg)}
 .chip{display:inline-block;min-width:54px;padding:2px 8px;border-radius:6px;font-weight:600}
-.A{background:var(--Ab);color:var(--A)}.B{background:var(--Bb);color:var(--B)}.C{background:var(--Cb);color:var(--C)}.D{background:var(--Db);color:var(--D)}
+.A{background:var(--Ab);color:var(--A)}.B{background:var(--Bb);color:var(--B)}.C{background:var(--Cb);color:var(--C)}.D{background:var(--Db);color:var(--D)}.N{background:var(--bd);color:var(--mu)}.lv.N{background:var(--mu);color:#fff}.fill-N{background:var(--bd)}
 .lv{display:inline-block;width:22px;height:22px;line-height:22px;border-radius:50%;font-size:12px;font-weight:700;text-align:center;margin-right:4px}
 .lv.A{background:var(--A);color:#fff}.lv.B{background:var(--B);color:#fff}.lv.C{background:var(--C);color:#fff}.lv.D{background:var(--D);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:12px}
@@ -54,18 +54,16 @@ textarea,.fm input{font:inherit;padding:6px 8px;border:1px solid var(--bd);borde
 const Z=['หัวไลน์','กลางไลน์','Cooling','ท้ายไลน์'];
 const S=['1S คัดแยก','2S จัดวาง','3S ทำความสะอาด','4S มาตรฐาน','5S วินัย'];
 const TARGET=85,N=13;
-const names=['สมชาย','สมศักดิ์','วิชัย','ประยุทธ','สุรชัย','อนุชา','นิพนธ์','ธนากร','พงศกร','กิตติ','วรวุฒิ','อภิชาติ','ชัยวัฒน์','มานะ','ปรีชา','สุเทพ','เกรียงไกร','ธีรพงษ์','ณัฐพล','ศุภชัย','จักรพันธ์','บุญเลิศ','สมหมาย','ศักดา','วีระ','ประสิทธิ์','ทวี','อนันต์','สุรินทร์','เอกชัย','ภานุ','คมสัน','รัฐพล','ดนัย','ชาญยุทธ','พิสิษฐ์','นพดล','สิทธิพร','วุฒิชัย','ไพโรจน์','ธวัช','อดิศักดิ์','กฤษดา','สมบัติ','ปิยะ','วรพจน์','ชลิต','สันติ','ยุทธนา','เฉลิม','บัณฑิต','ณรงค์','อำนาจ','ธนพล'];
-let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-let D=[];for(let l=0;l<N;l++){const base=70+rnd()*22;D.push({sup:'คุณ'+names[l],tl:Z.map((_,z)=>'คุณ'+names[13+l*4+z]),s:Z.map(()=>S.map(()=>Math.round(Math.min(100,Math.max(50,base+(rnd()-.5)*20)))))})}
-try{const x=JSON.parse(localStorage.getItem('s5v1'));if(x&&x.length==N)D=x}catch(e){}
+let D=[];for(let l=0;l<N;l++)D.push({sup:'',tl:Z.map(()=>''),s:Z.map(()=>S.map(()=>null))});
+try{const x=JSON.parse(localStorage.getItem('s5v2'));if(x&&x.length==N)D=x}catch(e){}
 let DB=null,ME='';
 const wf=e=>{console.error(e);alert('บันทึกขึ้นระบบกลางไม่สำเร็จ: '+((e&&(e.message||e.code))||'ไม่ทราบสาเหตุ')+'\n(ตรวจสอบว่าบัญชีของคุณมีสิทธิ์ Contributor ขึ้นไป หรือรูปมีขนาดใหญ่เกินไป)')};
-const save=l=>{schedPush();if(DB){if(l!=null)DB.doc('lines/l'+l).set({json:JSON.stringify(D[l])}).catch(wf);return}try{localStorage.setItem('s5v1',JSON.stringify(D))}catch(e){}};
-const avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+const save=l=>{schedPush('sc');if(DB){if(l!=null)DB.doc('lines/l'+l).set({json:JSON.stringify(D[l])}).catch(wf);return}try{localStorage.setItem('s5v2',JSON.stringify(D))}catch(e){}};
+const avg=a=>{a=a.filter(x=>x!=null&&!isNaN(x));return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 const zp=(l,z)=>avg(D[l].s[z]);
 const lp=l=>avg(Z.map((_,z)=>zp(l,z)));
-const lvl=p=>p>=90?['A','ดีเยี่ยม']:p>=80?['B','ดี']:p>=70?['C','พอใช้']:['D','ต้องปรับปรุง'];
-const f=p=>p.toFixed(1)+'%';
+const lvl=p=>p==null?['N','ไม่มีข้อมูล']:p>=90?['A','ดีเยี่ยม']:p>=80?['B','ดี']:p>=70?['C','พอใช้']:['D','ต้องปรับปรุง'];
+const f=p=>p==null?'–':p.toFixed(1)+'%';
 const chip=p=>`<span class="chip ${lvl(p)[0]}">${f(p)}</span>`;
 const lb=p=>{const v=lvl(p);return `<span class="lv ${v[0]}">${v[0]}</span>${v[1]}`};
 const ln=l=>'Line '+String(l+1).padStart(2,'0');
@@ -74,31 +72,31 @@ const tabs={ov:'ภาพรวม',dt:'รายละเอียด/บัน
 function nav(){document.getElementById('nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';draw()">${v}</button>`).join('')}
 function legend(){return `<div class="legend"><span><span class="lv A">A</span>≥90% ดีเยี่ยม</span><span><span class="lv B">B</span>80–89.9% ดี</span><span><span class="lv C">C</span>70–79.9% พอใช้</span><span><span class="lv D">D</span>&lt;70% ต้องปรับปรุง</span></div>`}
 function ov(){
-const lp_=D.map((_,l)=>lp(l)),all=avg(lp_),mx=lp_.indexOf(Math.max(...lp_)),mn=lp_.indexOf(Math.min(...lp_));
+const lp_=D.map((_,l)=>lp(l)),all=avg(lp_),vl=lp_.map((p,i)=>[p,i]).filter(x=>x[0]!=null),mx=vl.length?vl.reduce((a,b)=>b[0]>a[0]?b:a)[1]:-1,mn=vl.length?vl.reduce((a,b)=>b[0]<a[0]?b:a)[1]:-1;
 const zavg=Z.map((_,z)=>avg(D.map((_,l)=>zp(l,z))));
-const below=lp_.filter(p=>p<TARGET).length;
+const below=lp_.filter(p=>p!=null&&p<TARGET).length;
 return `<div class="kpis">
 <div class="card kpi"><span>คะแนน 5S รวมโรงงาน</span><b>${f(all)}</b>${lb(all)}</div>
-<div class="card kpi"><span>ไลน์ที่ดีที่สุด</span><b>${ln(mx)}</b><span>${f(lp_[mx])}</span></div>
-<div class="card kpi"><span>ไลน์ที่ต้องเร่งปรับปรุง</span><b>${ln(mn)}</b><span>${f(lp_[mn])}</span></div>
+<div class="card kpi"><span>ไลน์ที่ดีที่สุด</span><b>${mx<0?'–':ln(mx)}</b><span>${f(lp_[mx])}</span></div>
+<div class="card kpi"><span>ไลน์ที่ต้องเร่งปรับปรุง</span><b>${mn<0?'–':ln(mn)}</b><span>${f(lp_[mn])}</span></div>
 <div class="card kpi"><span>ไลน์ต่ำกว่าเป้า (${TARGET}%)</span><b>${below} / ${N}</b></div></div>
 <div class="card sc"><table><thead><tr><th>ไลน์</th><th class="l">Supervisor</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th><th class="l">ระดับ Sup</th></tr></thead><tbody>
-${D.map((d,l)=>`<tr class="go" onclick="cur=${l};tab='dt';draw()"><td><b>${ln(l)}</b></td><td class="l">${d.sup}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`).join('')}
+${D.map((d,l)=>`<tr class="go" onclick="cur=${l};tab='dt';draw()"><td><b>${ln(l)}</b></td><td class="l">${d.sup||'—'}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`).join('')}
 </tbody><tfoot><tr><td colspan="2" class="l"><b>เฉลี่ยทุกไลน์</b></td>${zavg.map(p=>`<td>${chip(p)}</td>`).join('')}<td>${chip(all)}</td><td></td></tr></tfoot></table></div>
 ${legend()}<div class="mu">คลิกที่แถวเพื่อดูรายละเอียดและบันทึกคะแนนของไลน์นั้น</div>`}
 function dt(){
 const d=D[cur],p=lp(cur);
 return `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
 <select onchange="cur=+this.value;draw()">${D.map((_,l)=>`<option value="${l}" ${l==cur?'selected':''}>${ln(l)}</option>`).join('')}</select>
-<div class="card" style="flex:1;min-width:240px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="mu">Supervisor</div><b>${d.sup}</b><div>${lb(p)}</div></div><div class="big">${f(p)}</div></div></div>
-<div class="grid">${Z.map((z,zi)=>{const q=zp(cur,zi),v=lvl(q)[0];return `<div class="card"><div class="zh"><div><b>${z}</b><div class="mu">Team Leader: ${d.tl[zi]}</div><div class="mu">Issue ปิดแล้ว ${ist(cur,zi).c}/${ist(cur,zi).t}</div><div>${lb(q)}</div></div><div class="big">${f(q)}</div></div>
-${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="row"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x}%"></i></div><input type="number" min="0" max="100" value="${x}" onchange="setv(${zi},${si},this.value)"></div>`}).join('')}</div>`}).join('')}</div>
+<div class="card" style="flex:1;min-width:240px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="mu">Supervisor</div><b>${d.sup||'—'}</b><div>${lb(p)}</div></div><div class="big">${f(p)}</div></div></div>
+<div class="grid">${Z.map((z,zi)=>{const q=zp(cur,zi),v=lvl(q)[0];return `<div class="card"><div class="zh"><div><b>${z}</b><div class="mu">Team Leader: ${d.tl[zi]||'—'}</div><div class="mu">Issue ปิดแล้ว ${ist(cur,zi).c}/${ist(cur,zi).t}</div><div>${lb(q)}</div></div><div class="big">${f(q)}</div></div>
+${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="row"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x||0}%"></i></div><input type="number" min="0" max="100" value="${x==null?'':x}" onchange="setv(${zi},${si},this.value)"></div>`}).join('')}</div>`}).join('')}</div>
 ${legend()}<div class="mu">แก้ตัวเลขคะแนน (% ต่อหัวข้อ 5S) ระบบคำนวณ % พื้นที่ → TL → Sup ให้อัตโนมัติ</div>`}
-function setv(z,s,v){D[cur].s[z][s]=Math.max(0,Math.min(100,+v||0));save(cur);draw()}
+function setv(z,s,v){D[cur].s[z][s]=(v===''||v==null)?null:Math.max(0,Math.min(100,+v||0));save(cur);draw()}
 function rk(){
-const tl=[];D.forEach((d,l)=>Z.forEach((z,zi)=>tl.push({l,z,zi,n:d.tl[zi],p:zp(l,zi)})));
-tl.sort((a,b)=>b.p-a.p);
-const sp=D.map((d,l)=>({l,n:d.sup,p:lp(l)})).sort((a,b)=>b.p-a.p);
+const tl=[];D.forEach((d,l)=>Z.forEach((z,zi)=>tl.push({l,z,zi,n:d.tl[zi]||'—',p:zp(l,zi)})));
+tl.sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
+const sp=D.map((d,l)=>({l,n:d.sup||'—',p:lp(l)})).sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
 return `<div class="two"><div><h2>ประเมิน Supervisor (เฉลี่ยทั้ง 4 พื้นที่)</h2><div class="card sc"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
 ${sp.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td><td>${chip(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></div>
 <div><h2>ประเมิน Team Leader (52 คน)</h2><div class="card sc" style="max-height:640px;overflow:auto"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>พื้นที่</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
@@ -106,13 +104,9 @@ ${tl.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td>
 
 const todayS=()=>new Date().toISOString().slice(0,10),addD=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let ISS=[{id:1,l:0,z:0,s:2,sev:'สูง',desc:'พบคราบน้ำมันรั่วใต้เครื่อง Filler',auditor:'QA Audit',date:addD(-5),due:addD(-1),st:'open',reply:''},
-{id:2,l:0,z:2,s:1,sev:'กลาง',desc:'อุปกรณ์ Cooling วางไม่เป็นที่ ไม่มีป้ายระบุตำแหน่ง',auditor:'QA Audit',date:addD(-3),due:addD(4),st:'replied',reply:'ทำ shadow board และติดป้ายแล้ว รอ Audit ตรวจ'},
-{id:3,l:1,z:1,s:0,sev:'ต่ำ',desc:'มีของไม่ใช้งานวางข้างสายพาน',auditor:'Plant Mgr',date:addD(-9),due:addD(-2),st:'closed',reply:'นำออกและย้ายไปพื้นที่เก็บแล้ว'},
-{id:4,l:2,z:3,s:3,sev:'กลาง',desc:'ไม่มี Visual standard ที่จุด Packing ท้ายไลน์',auditor:'QA Audit',date:addD(-1),due:addD(6),st:'open',reply:''},
-{id:5,l:1,z:0,s:4,sev:'สูง',desc:'พนักงานไม่ใช้ PPE ตามมาตรฐาน',auditor:'Safety',date:addD(-7),due:addD(-3),st:'closed',reply:'อบรมซ้ำและติดตามหน้างานทุกกะ'}];
-try{const x=JSON.parse(localStorage.getItem('s5iss1'));if(Array.isArray(x))ISS=x}catch(e){}
-const saveI=i=>{schedPush();if(DB){if(i)DB.collection('issues').doc(String(i.id)).set(i).catch(wf);return}try{localStorage.setItem('s5iss1',JSON.stringify(ISS))}catch(e){}};
+let ISS=[];
+try{const x=JSON.parse(localStorage.getItem('s5iss2'));if(Array.isArray(x))ISS=x}catch(e){}
+const saveI=i=>{schedPush('is');if(DB){if(i)DB.collection('issues').doc(String(i.id)).set(i).catch(wf);return}try{localStorage.setItem('s5iss2',JSON.stringify(ISS))}catch(e){}};
 let FL={l:'all',st:'all'};
 let PH={};
 const DC={},KC={},DRV='Google Drive',FOLDER='1VLHszyVtlspScnkkvLIzWO8Hmz6tKsJp';let MC=null;
@@ -181,7 +175,7 @@ ${D.map((_,l)=>`<tr><td><b>${ln(l)}</b></td>${Z.map((_,z)=>{const x=ist(l,z);ret
 ${list.length?list.map(i=>`<div class="card iss ${i.st}"><div><b>#${i.id} ${ln(i.l)} · ${Z[i.z]}</b> <span class="mu">(${S[i.s]})</span>
 <span class="badge st-${i.st}">${stT[i.st]}</span><span class="badge ${i.sev=='สูง'?'D':i.sev=='กลาง'?'C':'B'}">${i.sev}</span>${late(i)?'<span class="badge st-open">เกินกำหนด</span>':''}</div>
 <div style="margin:6px 0">${esc(i.desc)}</div>${photoHTML(i.img,'รูปปัญหา')}
-<div class="mu">ผู้ตรวจ: ${esc(i.auditor||'-')} · พบ ${i.date} · ครบกำหนด ${i.due} · ผู้รับผิดชอบ: TL ${D[i.l].tl[i.z]} / Sup ${D[i.l].sup}</div>
+<div class="mu">ผู้ตรวจ: ${esc(i.auditor||'-')} · พบ ${i.date} · ครบกำหนด ${i.due} · ผู้รับผิดชอบ: TL ${D[i.l].tl[i.z]||'—'} / Sup ${D[i.l].sup||'—'}</div>
 ${i.st=='open'?`<textarea id="r${i.id}" rows="2" placeholder="TL ตอบ: สาเหตุ / การแก้ไข" style="margin-top:8px"></textarea><label class="mu" style="display:block;margin-top:6px">รูปถ่ายหลังแก้ไข (บังคับ)<input type="file" accept="image/*" onchange="pickPh('r${i.id}',this)"></label><div id="pv-r${i.id}">${phHTML('r'+i.id)}</div><div class="ib"><button class="btn p" id="bt-r${i.id}" onclick="rep(${i.id})" ${PH['r'+i.id]?'':'disabled'}>ส่งคำตอบ</button><span class="mu" id="hn-r${i.id}" style="${PH['r'+i.id]?'display:none':''}">ต้องแนบรูปก่อนจึงจะส่งคำตอบได้</span></div>`
 :`<div class="card" style="margin-top:8px;background:var(--bg)"><span class="mu">คำตอบของพื้นที่${i.by?' โดย '+esc(i.by):''}:</span><br>${esc(i.reply)}${photoHTML(i.rimg,'รูปหลังแก้ไข')}</div>
 <div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">ตีกลับ</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิดใหม่</button>`}</div>`}
@@ -195,7 +189,7 @@ function stI(id,st){const i=ISS.find(x=>x.id==id);i.st=st;saveI(i);draw()}
 const SHEET_URL='https://docs.google.com/spreadsheets/d/1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A/edit';
 let SH={ek:'sc',ik:'sc',msg:''};
 const SHD=['Line','Zone','Supervisor','TeamLeader','1S','2S','3S','4S','5S','Area%'],IH=['ID','Line','Zone','5S','Severity','Description','Auditor','DateFound','Due','Status','Reply','RepliedBy','Photo','ReplyPhoto'];
-function scoreRows(){const r=[SHD];D.forEach((d,l)=>Z.forEach((z,zi)=>r.push([l+1,z,d.sup,d.tl[zi],...d.s[zi],+zp(l,zi).toFixed(1)])));return r}
+function scoreRows(){const r=[SHD];D.forEach((d,l)=>Z.forEach((z,zi)=>r.push([l+1,z,d.sup,d.tl[zi],...d.s[zi],zp(l,zi)==null?'':+zp(l,zi).toFixed(1)])));return r}
 function issueRows(){return [IH,...ISS.slice().sort((a,b)=>a.id-b.id).map(i=>[i.id,i.l+1,Z[i.z],(i.s+1)+'S',i.sev,i.desc,i.auditor||'',i.date,i.due,i.st,i.reply||'',i.by||'',dlink(i.img),dlink(i.rimg)])]}
 const q=v=>{v=String(v==null?'':v);return /[",\n\t]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
 const toText=(rows,sep)=>rows.map(r=>r.map(sep=='\t'?v=>String(v==null?'':v).replace(/[\t\r\n]/g,' '):q).join(sep)).join('\n');
@@ -216,6 +210,7 @@ if(csup>=0&&r[csup].trim())D[l].sup=r[csup].trim();if(ctl>=0&&r[ctl].trim())D[l]
 ch.forEach(l=>save(l));return 'นำเข้าคะแนน '+n+' แถว อัปเดต '+ch.size+' ไลน์'+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,4).join('; ')+')':'')}
 const stMap={open:'open',replied:'replied',closed:'closed','รอตอบ':'open','ตอบแล้ว':'replied','ปิดแล้ว':'closed','ปิด':'closed'},svMap={high:'สูง',medium:'กลาง',low:'ต่ำ','สูง':'สูง','กลาง':'กลาง','ต่ำ':'ต่ำ'};
 function impIssues(text){const T=readTable(text);if(!T)return 'ไม่พบข้อมูล (ต้องมีหัวตารางและอย่างน้อย 1 แถว)';
+if(T.col('line')<0||T.col('zone')<0||T.col('description')<0)return 'ไม่พบคอลัมน์ Line / Zone / Description';
 const c=n=>T.col(n),g=(r,n)=>c(n)>=0?String(r[c(n)]||'').trim():'';let add=0,upd=0;const bad=[];
 T.rows.forEach((r,ri)=>{const l=lIdx(g(r,'line')),z=zIdx(g(r,'zone')),d=g(r,'description');if(l<0||z<0||!d){bad.push('แถว '+(ri+2));return}
 let id=parseInt(g(r,'id'));const ex=id?ISS.find(x=>x.id==id):null;if(!id)id=Math.max(0,...ISS.map(i=>i.id))+1;
@@ -254,8 +249,8 @@ const u=await claude.use("user");if(u){const m=await u.me();ME=m.name||''}
 const db=await claude.use("db");if(!db)return;
 DB=db;ISS=[];document.getElementById('mode').textContent='🟢 ข้อมูลร่วม ทุกคนเห็นตรงกัน';
 const busy=()=>/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);
-db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());schedPush();if(!busy())draw()},console.error);
-db.collection('lines').onSnapshot(q=>{q.docs.forEach(d=>{const k=+d.id.slice(1);try{if(k>=0&&k<N)D[k]=JSON.parse(d.data().json)}catch(e){}});schedPush();if(!busy())draw()},console.error);
+db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());if(!busy())draw()},console.error);
+db.collection('lines').onSnapshot(q=>{q.docs.forEach(d=>{const k=+d.id.slice(1);try{if(k>=0&&k<N)D[k]=JSON.parse(d.data().json)}catch(e){}});if(!busy())draw()},console.error);
 }catch(e){console.error(e)}})();
 
 const DEF_URL='https://script.google.com/macros/s/AKfycbzKPgiv9OwOcfzQLvr8Spxs0mXXX6jgvkJCKiVr3-va_1nB2N0HI8naT5sTeHDPZ0JR/exec';
@@ -280,7 +275,7 @@ MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u)syncOn();else se
 function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
 const SK={sc:{tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:N1000',rows:()=>issueRows()}};
-let SY={on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
+let SY={loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
 const nrm=rows=>JSON.stringify(rows.map(r=>{r=r.map(c=>String(c==null?'':c));while(r.length&&r[r.length-1]==='')r.pop();return r}).filter(r=>r.length));
 function setSy(t){if(t!=null)SY.st=t;const e=document.getElementById('sy');if(e)e.textContent=SY.st;const b=document.getElementById('syb');if(b)b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet'}
 async function sargs(tool,o){if(!SY.keys[tool]){try{const d=await SY.mcp.describeTool(SRV,tool);SY.keys[tool]=Object.keys((d.inputSchema&&d.inputSchema.properties)||{})}catch(e){SY.keys[tool]=['spreadsheetId']}}
@@ -289,15 +284,16 @@ function valsOf(res){const v=x=>x&&Array.isArray(x.values)?x.values:null;let a=v
 if(!a){const t=(res.content||[]).find(c=>c.type=='text');if(t){try{a=v(JSON.parse(t.text))}catch(e){}}}return a||[]}
 const tnow=()=>new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
 const errT=e=>e&&(e.code=='not_in_manifest'||e.code=='not_granted'||e.code=='consent_required')?'ยังไม่ได้รับอนุญาตให้ใช้ Google Sheets กับหน้านี้ — กด "จัดการสิทธิ์" แล้วเปิดสิทธิ์ Google Sheets':e&&e.code=='needs_reauth'?'ต้องเชื่อมต่อ Google Sheets ใหม่':e&&e.code=='server_not_connected'?'ยังไม่ได้เชื่อมต่อ Google Sheets':'ซิงก์ผิดพลาด ('+((e&&(e.code||e.message))||'?')+')';
-function schedPush(){if(!SY.on)return;clearTimeout(SY.t);SY.t=setTimeout(()=>{push('sc');push('is')},1500)}
-async function push(k){if(!SY.on||!SY.mcp)return;const rows=SK[k].rows(),h=nrm(rows);if(h==SY.hs[k])return;
+function schedPush(k){if(!SY.on||SY.importing)return;if(k)SY.dirty[k]=1;clearTimeout(SY.t);SY.t=setTimeout(()=>{push('sc');push('is')},1500)}
+async function push(k){if(!SY.on||!SY.mcp||!SY.loaded[k]||SY.block[k]||!SY.dirty[k])return;const rows=SK[k].rows(),h=nrm(rows);if(h==SY.hs[k])return;
 try{const a=await sargs('update_values',{range:SK[k].tab+'!A1:'+String.fromCharCode(64+rows[0].length)+rows.length,values:rows.map(r=>r.map(c=>c==null?'':c))});
-await SY.mcp.callTool(SRV,'update_values',a);SY.hs[k]=h;SY.at[k]=Date.now();try{await SY.mcp.invalidate(SRV,'get_values')}catch(e){}setSy('ซิงก์ล่าสุด '+tnow()+' (ส่งขึ้น Sheet)')}catch(e){setSy(errT(e))}}
+await SY.mcp.callTool(SRV,'update_values',a);SY.hs[k]=h;SY.dirty[k]=0;SY.at[k]=Date.now();try{await SY.mcp.invalidate(SRV,'get_values')}catch(e){}setSy('ซิงก์ล่าสุด '+tnow()+' (ส่งขึ้น Sheet)')}catch(e){setSy(errT(e))}}
 function onEv(k,ev){if(!SY.on)return;if(ev.type=='error'){setSy(errT(ev.error)+(ev.error&&ev.error.message?' · '+ev.error.message:''));showFix(ev.error);return}
 if(Date.now()-SY.at[k]<8000)return;const vals=valsOf(ev.result);
-if(vals.length<2){push(k);return}
+if(vals.length<2){SY.loaded[k]=true;setSy('Sheet แท็บ '+SK[k].tab+' ยังว่าง — ไม่เขียนทับ รอให้มีการแก้ไขจริงจาก Dashboard');return}
 const h=nrm(vals);if(h==SY.hs[k]){setSy('ซิงก์ล่าสุด '+tnow());return}
-SY.hs[k]=h;const t=toText(vals,','),m=k=='sc'?impScores(t):impIssues(t);setSy('ซิงก์ล่าสุด '+tnow()+' (รับจาก Sheet) · '+m);
+SY.hs[k]=h;const t=toText(vals,',');SY.importing=true;let m;try{m=k=='sc'?impScores(t):impIssues(t)}finally{SY.importing=false}
+if(/^ไม่พบ/.test(m)){SY.block[k]=true;SY.loaded[k]=true;setSy('รูปแบบแท็บ '+SK[k].tab+' ไม่ตรงกับที่ Dashboard รู้จัก — ปิดการเขียนแท็บนี้เพื่อไม่ทับข้อมูลของคุณ ('+m+')');return}SY.loaded[k]=true;setSy('ซิงก์ล่าสุด '+tnow()+' (รับจาก Sheet) · '+m);
 const bz=/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);if(!bz)draw()}
 async function syncOn(){try{SY.mcp=await mcpGet()}catch(e){}
 if(!SY.mcp){setSy(window.claude?'โหมดนี้ใช้ซิงก์ Sheet ไม่ได้':'ยังไม่ได้ตั้งค่า Apps Script — ไปที่แท็บ Export / Import Sheet ข้อ 0');return}
