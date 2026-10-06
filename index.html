@@ -228,7 +228,7 @@ function sh(){
 const ex=toText(SH.ek=='sc'?scoreRows():issueRows(),'\t');
 const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 5S (52 พื้นที่)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
 return `<div class="card"><b>0) เชื่อมอัตโนมัติด้วย Google Apps Script</b> <span class="mu">(ใช้เมื่อโฮสต์นอก Claude เช่น GitHub Pages)</span>
-<div class="fm"><label>Web App URL<input id="apiu" value="${esc(API.u)}" placeholder="https://script.google.com/macros/s/…/exec"></label><label>รหัสลับ (TOKEN)<input id="apit" type="password" value="${esc(API.t)}"></label></div>
+<div class="fm" style="grid-template-columns:1fr"><label>Web App URL (ฝังไว้ให้แล้ว แก้ได้)<input id="apiu" value="${esc(API.u)}"></label></div>
 <div class="ib"><button class="btn p" onclick="saveApi()">บันทึกและเปิดซิงก์</button></div>
 <div class="mu">ข้อมูลใน Sheet คือศูนย์กลางที่ทุกคนใช้ร่วมกัน รูปเก็บในโฟลเดอร์ Drive · วิธีติดตั้งดูในไฟล์ apps-script.gs</div></div>
 <h2>1) Export: Dashboard → Google Sheet</h2><div class="card"><div class="mu" style="display:none"></div><div class="mu">เลือกชุดข้อมูล แล้วคัดลอกไปวางที่เซลล์ A1 ของแท็บใน Sheet (แนะนำตั้งชื่อแท็บ Scores และ Issues) หรือดาวน์โหลด CSV แล้วใช้ ไฟล์ → นำเข้า ใน Sheet</div>
@@ -258,7 +258,8 @@ db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());schedPush();i
 db.collection('lines').onSnapshot(q=>{q.docs.forEach(d=>{const k=+d.id.slice(1);try{if(k>=0&&k<N)D[k]=JSON.parse(d.data().json)}catch(e){}});schedPush();if(!busy())draw()},console.error);
 }catch(e){console.error(e)}})();
 
-const API={get u(){try{return localStorage.getItem('s5api_u')||''}catch(e){return ''}},get t(){try{return localStorage.getItem('s5api_t')||''}catch(e){return ''}}};
+const DEF_URL='https://script.google.com/macros/s/AKfycbzKPgiv9OwOcfzQLvr8Spxs0mXXX6jgvkJCKiVr3-va_1nB2N0HI8naT5sTeHDPZ0JR/exec';
+const API={get u(){try{return localStorage.getItem('s5api_u')||DEF_URL}catch(e){return DEF_URL}},t:''};
 async function apiCall(o,post){const q=Object.assign({},o,{token:API.t});let r;
 try{r=post?await fetch(API.u,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(q)}):await fetch(API.u+'?'+new URLSearchParams(q))}catch(e){throw{code:'network',message:'เชื่อมต่อ Apps Script ไม่ได้ (ตรวจ URL และการ Deploy แบบ Anyone)'}}
 if(!r.ok)throw{code:'http_'+r.status,message:'HTTP '+r.status};let j;try{j=await r.json()}catch(e){throw{code:'bad_response',message:'Apps Script ตอบกลับไม่ใช่ JSON (ตรวจว่า Deploy เป็น Web app และเข้าถึงได้แบบ Anyone)'}}
@@ -272,10 +273,10 @@ if(tool=='download_file_content'){const j=await apiCall({action:'photo',id:a.fil
 throw{code:'bad_request',message:tool}},
 watchTool(srv,tool,inp,h,o){let on=true;const run=async()=>{if(!on)return;try{h({type:'data',result:await this.callTool(srv,tool,inp)})}catch(e){h({type:'error',error:e})}};run();const t=setInterval(run,(o&&o.refetchInterval)||30000);return()=>{on=false;clearInterval(t)}},
 async invalidate(){},async describeTool(){throw{code:'bad_request'}},async listTools(){return{servers:[]}}};
-async function mcpGet(){if(window.claude){try{const m=await claude.use('mcp');if(m)return m}catch(e){}}return API.u&&API.t?APIMC:null}
-function saveApi(){const u=document.getElementById('apiu').value.trim(),t=document.getElementById('apit').value.trim();
-try{localStorage.setItem('s5api_u',u);localStorage.setItem('s5api_t',t)}catch(e){}
-MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u&&t)syncOn();else setSy('กรอก URL และรหัสลับให้ครบ')}
+async function mcpGet(){if(window.claude){try{const m=await claude.use('mcp');if(m)return m}catch(e){}}return API.u?APIMC:null}
+function saveApi(){const u=document.getElementById('apiu').value.trim();
+try{localStorage.setItem('s5api_u',u)}catch(e){}
+MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u)syncOn();else setSy('กรอก Web App URL')}
 function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
 const SK={sc:{tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:N1000',rows:()=>issueRows()}};
@@ -309,7 +310,7 @@ if(e&&e.code=='not_in_manifest'&&SY.mcp){try{const l=await SY.mcp.listTools();se
 function syncOff(){SY.on=false;SY.unsub.forEach(f=>{try{f()}catch(e){}});SY.unsub=[];try{localStorage.removeItem('s5sync')}catch(e){}setSy('ปิดซิงก์แล้ว')}
 async function permFix(){try{const pm=await claude.use('permissions');if(pm)await pm.manage()}catch(e){}}
 function toggleSync(){SY.on?syncOff():syncOn()}
-try{if(localStorage.getItem('s5sync')=='1')setTimeout(syncOn,2000)}catch(e){}
+try{if(!window.claude||localStorage.getItem('s5sync')=='1')setTimeout(syncOn,1500)}catch(e){}
 
 draw();setSy();
 </script></body></html>
