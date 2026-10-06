@@ -119,7 +119,7 @@ const DC={},KC={},DRV='Google Drive',FOLDER='1VLHszyVtlspScnkkvLIzWO8Hmz6tKsJp';
 const imgSrc=v=>!v?'':String(v).startsWith('data:')?v:String(v).startsWith('d:')?(DC[v.slice(2)]||''):'/_blob/'+v;
 const dlink=v=>v&&String(v).startsWith('d:')?'https://drive.google.com/file/d/'+v.slice(2)+'/view':'';
 const objOf=r=>{let o=r&&(r.structuredContent||r.payload);if(o&&typeof o=='object'&&!Array.isArray(o)&&Object.keys(o).length)return o;const t=((r&&r.content)||[]).find(c=>c.type=='text');try{return JSON.parse(t.text)}catch(e){return{}}};
-async function getMc(){if(!MC){try{MC=window.claude?await claude.use('mcp'):null}catch(e){MC=null}}return MC}
+async function getMc(){if(!MC){try{MC=await mcpGet()}catch(e){MC=null}}return MC}
 async function dargs(m,tool,o){if(!KC[tool]){try{const d=await m.describeTool(DRV,tool);KC[tool]=Object.keys((d.inputSchema&&d.inputSchema.properties)||{})}catch(e){KC[tool]=[]}}
 if(!KC[tool].some(p=>p.includes('_')))return o;const r={};for(const k in o)r[k.replace(/[A-Z]/g,c=>'_'+c.toLowerCase())]=o[k];return r}
 async function driveUp(blob,k){const m=await getMc();if(!m)throw new Error('ไม่มีตัวเชื่อม Drive');const du=await b2d(blob);
@@ -189,7 +189,7 @@ ${i.st=='open'?`<textarea id="r${i.id}" rows="2" placeholder="TL ตอบ: ส�
 <div class="mu" style="margin-top:10px">% ปิด = Issue ที่ Audit ยืนยันปิด ÷ Issue ทั้งหมด · % ตอบกลับ = (ตอบแล้ว + ปิดแล้ว) ÷ ทั้งหมด</div>`}
 function addIss(){const g=id=>document.getElementById(id).value,t=g('ft').trim();if(!t){alert('กรุณากรอกรายละเอียดปัญหา');return}if(!PH.add){alert('กรุณาแนบรูปถ่ายปัญหาก่อนบันทึก');return}
 const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:+g('fl'),z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;ISS.push(ni);saveI(ni);draw()}
-function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){alert('กรุณากรอกคำตอบ');return}if(!PH['r'+id]){alert('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];i.reply=t;i.by=ME;i.st='replied';saveI(i);draw()}
+function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){alert('กรุณากรอกคำตอบ');return}if(!PH['r'+id]){alert('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];i.reply=t;i.by=who();i.st='replied';saveI(i);draw()}
 function stI(id,st){const i=ISS.find(x=>x.id==id);i.st=st;saveI(i);draw()}
 
 const SHEET_URL='https://docs.google.com/spreadsheets/d/1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A/edit';
@@ -227,7 +227,11 @@ return 'นำเข้า Issue: เพิ่มใหม่ '+add+' · อั�
 function sh(){
 const ex=toText(SH.ek=='sc'?scoreRows():issueRows(),'\t');
 const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 5S (52 พื้นที่)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
-return `<div class="card"><b>1) Export: Dashboard → Google Sheet</b><div class="mu">เลือกชุดข้อมูล แล้วคัดลอกไปวางที่เซลล์ A1 ของแท็บใน Sheet (แนะนำตั้งชื่อแท็บ Scores และ Issues) หรือดาวน์โหลด CSV แล้วใช้ ไฟล์ → นำเข้า ใน Sheet</div>
+return `<div class="card"><b>0) เชื่อมอัตโนมัติด้วย Google Apps Script</b> <span class="mu">(ใช้เมื่อโฮสต์นอก Claude เช่น GitHub Pages)</span>
+<div class="fm"><label>Web App URL<input id="apiu" value="${esc(API.u)}" placeholder="https://script.google.com/macros/s/…/exec"></label><label>รหัสลับ (TOKEN)<input id="apit" type="password" value="${esc(API.t)}"></label></div>
+<div class="ib"><button class="btn p" onclick="saveApi()">บันทึกและเปิดซิงก์</button></div>
+<div class="mu">ข้อมูลใน Sheet คือศูนย์กลางที่ทุกคนใช้ร่วมกัน รูปเก็บในโฟลเดอร์ Drive · วิธีติดตั้งดูในไฟล์ apps-script.gs</div></div>
+<h2>1) Export: Dashboard → Google Sheet</h2><div class="card"><div class="mu" style="display:none"></div><div class="mu">เลือกชุดข้อมูล แล้วคัดลอกไปวางที่เซลล์ A1 ของแท็บใน Sheet (แนะนำตั้งชื่อแท็บ Scores และ Issues) หรือดาวน์โหลด CSV แล้วใช้ ไฟล์ → นำเข้า ใน Sheet</div>
 <div class="ib">${sel('ek',SH.ek)}<button class="btn p" onclick="cp(this)">คัดลอก (วางใน Sheet ได้เลย)</button><button class="btn" onclick="dl()">ดาวน์โหลด CSV</button><a class="btn" href="${SHEET_URL}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">เปิด Google Sheet ↗</a></div>
 <textarea id="exp" rows="6" readonly style="margin-top:8px;font-size:12px;white-space:pre">${esc(ex)}</textarea></div>
 <h2>2) Import: Google Sheet → Dashboard</h2><div class="card"><div class="mu">ใน Sheet เลือกช่วงข้อมูลรวมหัวตาราง (คอลัมน์ตามที่ Export) กด Ctrl+C แล้ววางในช่องด้านล่าง หรือเลือกไฟล์ CSV ที่ดาวน์โหลดจาก Sheet</div>
@@ -238,7 +242,7 @@ ${SH.msg?`<div class="card" style="margin-top:8px;background:var(--bg)">${esc(SH
 <div class="mu" style="margin-top:10px">คะแนนใช้คีย์ Line + Zone จับคู่แถว (แก้ 1S–5S, ชื่อ Supervisor/TeamLeader ได้) · Issue ใช้ ID จับคู่ ถ้า ID ว่างหรือไม่ตรงจะเพิ่มเป็น Issue ใหม่ · Status ใช้ open / replied / closed · คอลัมน์ Area% ไม่ถูกนำเข้า (คำนวณใหม่เอง)</div>`}
 function cp(b){const t=document.getElementById('exp');t.select();const ok=()=>{b.textContent='คัดลอกแล้ว ✓'};try{navigator.clipboard.writeText(t.value).then(ok,()=>{document.execCommand('copy');ok()})}catch(e){document.execCommand('copy');ok()}}
 async function dl(){const k=SH.ek,t=toText(k=='sc'?scoreRows():issueRows(),',');let dm=null;try{dm=window.claude?await claude.use('downloads'):null}catch(e){}
-if(!dm){alert('โหมดนี้ดาวน์โหลดไฟล์ไม่ได้ ใช้ปุ่มคัดลอกแทน');return}
+if(!dm){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));a.download=(k=='sc'?'5s-scores':'5s-issues')+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
 try{await dm.save({filename:(k=='sc'?'5s-scores':'5s-issues')+'.csv',data:'\uFEFF'+t})}catch(e){if(!e||e.code!='declined')alert('บันทึกไฟล์ไม่สำเร็จ')}}
 function ldf(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{document.getElementById('imp').value=r.result};r.readAsText(f)}
 function doImp(){const t=document.getElementById('imp').value;if(!t.trim()){SH.msg='ยังไม่มีข้อมูลให้นำเข้า';draw();return}
@@ -253,6 +257,26 @@ const busy=()=>/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tag
 db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());schedPush();if(!busy())draw()},console.error);
 db.collection('lines').onSnapshot(q=>{q.docs.forEach(d=>{const k=+d.id.slice(1);try{if(k>=0&&k<N)D[k]=JSON.parse(d.data().json)}catch(e){}});schedPush();if(!busy())draw()},console.error);
 }catch(e){console.error(e)}})();
+
+const API={get u(){try{return localStorage.getItem('s5api_u')||''}catch(e){return ''}},get t(){try{return localStorage.getItem('s5api_t')||''}catch(e){return ''}}};
+async function apiCall(o,post){const q=Object.assign({},o,{token:API.t});let r;
+try{r=post?await fetch(API.u,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(q)}):await fetch(API.u+'?'+new URLSearchParams(q))}catch(e){throw{code:'network',message:'เชื่อมต่อ Apps Script ไม่ได้ (ตรวจ URL และการ Deploy แบบ Anyone)'}}
+if(!r.ok)throw{code:'http_'+r.status,message:'HTTP '+r.status};let j;try{j=await r.json()}catch(e){throw{code:'bad_response',message:'Apps Script ตอบกลับไม่ใช่ JSON (ตรวจว่า Deploy เป็น Web app และเข้าถึงได้แบบ Anyone)'}}
+if(j.error)throw{code:j.error,message:j.error};return j}
+const tabOf=a=>String(a.range||'').split('!')[0];
+const APIMC={async callTool(srv,tool,a){a=a||{};
+if(tool=='get_values'){const j=await apiCall({action:'read',tab:tabOf(a)});return{structuredContent:{values:j.values||[]},content:[]}}
+if(tool=='update_values'){await apiCall({action:'write',tab:tabOf(a),values:a.values},true);return{structuredContent:{status:'success'},content:[]}}
+if(tool=='create_file'){const j=await apiCall({action:'upload',name:a.title,mime:a.contentMimeType,b64:a.base64Content},true);return{structuredContent:{id:j.id},content:[]}}
+if(tool=='download_file_content'){const j=await apiCall({action:'photo',id:a.fileId},true);return{structuredContent:{content:j.content,mimeType:j.mimeType},content:[]}}
+throw{code:'bad_request',message:tool}},
+watchTool(srv,tool,inp,h,o){let on=true;const run=async()=>{if(!on)return;try{h({type:'data',result:await this.callTool(srv,tool,inp)})}catch(e){h({type:'error',error:e})}};run();const t=setInterval(run,(o&&o.refetchInterval)||30000);return()=>{on=false;clearInterval(t)}},
+async invalidate(){},async describeTool(){throw{code:'bad_request'}},async listTools(){return{servers:[]}}};
+async function mcpGet(){if(window.claude){try{const m=await claude.use('mcp');if(m)return m}catch(e){}}return API.u&&API.t?APIMC:null}
+function saveApi(){const u=document.getElementById('apiu').value.trim(),t=document.getElementById('apit').value.trim();
+try{localStorage.setItem('s5api_u',u);localStorage.setItem('s5api_t',t)}catch(e){}
+MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u&&t)syncOn();else setSy('กรอก URL และรหัสลับให้ครบ')}
+function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
 const SK={sc:{tab:'Scores',rng:'A1:J200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:N1000',rows:()=>issueRows()}};
 let SY={on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
@@ -274,8 +298,8 @@ if(vals.length<2){push(k);return}
 const h=nrm(vals);if(h==SY.hs[k]){setSy('ซิงก์ล่าสุด '+tnow());return}
 SY.hs[k]=h;const t=toText(vals,','),m=k=='sc'?impScores(t):impIssues(t);setSy('ซิงก์ล่าสุด '+tnow()+' (รับจาก Sheet) · '+m);
 const bz=/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);if(!bz)draw()}
-async function syncOn(){try{SY.mcp=window.claude?await claude.use('mcp'):null}catch(e){}
-if(!SY.mcp){setSy('โหมดนี้ใช้ซิงก์ Sheet ไม่ได้');return}
+async function syncOn(){try{SY.mcp=await mcpGet()}catch(e){}
+if(!SY.mcp){setSy(window.claude?'โหมดนี้ใช้ซิงก์ Sheet ไม่ได้':'ยังไม่ได้ตั้งค่า Apps Script — ไปที่แท็บ Export / Import Sheet ข้อ 0');return}
 SY.on=true;try{localStorage.setItem('s5sync','1')}catch(e){}setSy('กำลังเชื่อมต่อ...');
 try{const pm=await claude.use('permissions');if(pm){const st=await pm.state('mcp:'+SRV);if(st=='prompt')await pm.request(['mcp:'+SRV])}}catch(e){}
 try{for(const k of ['sc','is']){const a=await sargs('get_values',{range:SK[k].tab+'!'+SK[k].rng});
