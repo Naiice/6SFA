@@ -53,12 +53,13 @@ textarea,.fm input{font:inherit;padding:6px 8px;border:1px solid var(--bd);borde
 <script>
 const Z=['หัวไลน์','กลางไลน์','Cooling','ท้ายไลน์'];
 const S=['1S สะสาง','2S สะดวก','3S สะอาด','4S สร้างมาตรฐาน','5S สร้างนิสัย','6S ความปลอดภัย'];
-const TARGET=85,N=13;
-let D=[];for(let l=0;l<N;l++)D.push({sup:'',tl:Z.map(()=>''),s:Z.map(()=>S.map(()=>null))});
-try{const x=JSON.parse(localStorage.getItem('s5v3'));if(x&&x.length==N)D=x}catch(e){}
+const TARGET=85;
+const pad2=n=>String(n).padStart(2,'0'),mkU=(line,shift)=>({line,shift:shift||'',sup:'',tl:Z.map(()=>''),s:Z.map(()=>S.map(()=>null))});
+let D=[];
+try{const x=JSON.parse(localStorage.getItem('s5v4'));if(Array.isArray(x))D=x}catch(e){}
 let DB=null,ME='';
 const wf=e=>{console.error(e);alert('บันทึกขึ้นระบบกลางไม่สำเร็จ: '+((e&&(e.message||e.code))||'ไม่ทราบสาเหตุ')+'\n(ตรวจสอบว่าบัญชีของคุณมีสิทธิ์ Contributor ขึ้นไป หรือรูปมีขนาดใหญ่เกินไป)')};
-const save=l=>{schedPush('sc');if(DB){if(l!=null)DB.doc('lines/l'+l).set({json:JSON.stringify(D[l])}).catch(wf);return}try{localStorage.setItem('s5v3',JSON.stringify(D))}catch(e){}};
+const save=()=>{try{localStorage.setItem('s5v4',JSON.stringify(D))}catch(e){}};
 const avg=a=>{a=a.filter(x=>x!=null&&!isNaN(x));return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 const zp=(l,z)=>avg(D[l].s[z]);
 const lp=l=>avg(Z.map((_,z)=>zp(l,z)));
@@ -66,7 +67,12 @@ const lvl=p=>p==null?['N','ไม่มีข้อมูล']:p>=90?['A','ด�
 const f=p=>p==null?'–':p.toFixed(1)+'%';
 const chip=p=>`<span class="chip ${lvl(p)[0]}">${f(p)}</span>`;
 const lb=p=>{const v=lvl(p);return `<span class="lv ${v[0]}">${v[0]}</span>${v[1]}`};
-const ln=l=>'Line '+String(l+1).padStart(2,'0');
+const lnL=l=>D[l]?'Line '+pad2(D[l].line):'—';
+const ln=l=>D[l]?'Line '+pad2(D[l].line)+(D[l].shift?' · กะ '+D[l].shift:''):'—';
+const lnI=i=>'Line '+pad2(i.l+1)+(i.sh?' · กะ '+i.sh:'');
+const uOf=i=>D.find(u=>u.line==i.l+1&&u.shift==(i.sh||''));
+const inU=(i,u)=>!!u&&i.l+1==u.line&&(i.sh||'')==u.shift;
+const empty=()=>`<div class="card"><b>ยังไม่มีข้อมูลไลน์</b><div class="mu" style="margin-top:6px">Dashboard แสดงเฉพาะไลน์/กะที่มีในแท็บ Scores ของ Google Sheet — เพิ่มแถว (Line, Shift, Zone, Supervisor, TeamLeader) ในชีต แล้วรอซิงก์ประมาณ 30 วินาที หรือตรวจสถานะซิงก์ที่ด้านบนหน้า</div></div>`;
 let tab='ov',cur=0;
 const tabs={ov:'ภาพรวม',dt:'รายละเอียด/บันทึกคะแนน',rk:'ประเมิน Sup & TL',iss:'Issue จาก Audit',sh:'Export / Import Sheet'};
 function nav(){document.getElementById('nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';draw()">${v}</button>`).join('')}
@@ -79,10 +85,10 @@ return `<div class="kpis">
 <div class="card kpi"><span>คะแนน 6S รวมโรงงาน</span><b>${f(all)}</b>${lb(all)}</div>
 <div class="card kpi"><span>ไลน์ที่ดีที่สุด</span><b>${mx<0?'–':ln(mx)}</b><span>${f(lp_[mx])}</span></div>
 <div class="card kpi"><span>ไลน์ที่ต้องเร่งปรับปรุง</span><b>${mn<0?'–':ln(mn)}</b><span>${f(lp_[mn])}</span></div>
-<div class="card kpi"><span>ไลน์ต่ำกว่าเป้า (${TARGET}%)</span><b>${below} / ${N}</b></div></div>
-<div class="card sc"><table><thead><tr><th>ไลน์</th><th class="l">Supervisor</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th><th class="l">ระดับ Sup</th></tr></thead><tbody>
-${D.map((d,l)=>`<tr class="go" onclick="cur=${l};tab='dt';draw()"><td><b>${ln(l)}</b></td><td class="l">${d.sup||'—'}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`).join('')}
-</tbody><tfoot><tr><td colspan="2" class="l"><b>เฉลี่ยทุกไลน์</b></td>${zavg.map(p=>`<td>${chip(p)}</td>`).join('')}<td>${chip(all)}</td><td></td></tr></tfoot></table></div>
+<div class="card kpi"><span>ไลน์ต่ำกว่าเป้า (${TARGET}%)</span><b>${below} / ${D.length}</b></div></div>
+<div class="card sc"><table><thead><tr><th>ไลน์</th><th>Shift</th><th class="l">Supervisor</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th><th class="l">ระดับ Sup</th></tr></thead><tbody>
+${D.map((d,l)=>`<tr class="go" onclick="cur=${l};tab='dt';draw()"><td><b>${lnL(l)}</b></td><td>${d.shift||'—'}</td><td class="l">${d.sup||'—'}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`).join('')}
+</tbody><tfoot><tr><td colspan="3" class="l"><b>เฉลี่ยทุกไลน์</b></td>${zavg.map(p=>`<td>${chip(p)}</td>`).join('')}<td>${chip(all)}</td><td></td></tr></tfoot></table></div>
 ${legend()}<div class="mu">คลิกที่แถวเพื่อดูรายละเอียดและบันทึกคะแนนของไลน์นั้น</div>`}
 function dt(){
 const d=D[cur],p=lp(cur);
@@ -99,7 +105,7 @@ tl.sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
 const sp=D.map((d,l)=>({l,n:d.sup||'—',p:lp(l)})).sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
 return `<div class="two"><div><h2>ประเมิน Supervisor (เฉลี่ยทั้ง 4 พื้นที่)</h2><div class="card sc"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
 ${sp.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td><td>${chip(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></div>
-<div><h2>ประเมิน Team Leader (52 คน)</h2><div class="card sc" style="max-height:640px;overflow:auto"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>พื้นที่</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
+<div><h2>ประเมิน Team Leader (${D.length*Z.length} คน)</h2><div class="card sc" style="max-height:640px;overflow:auto"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>พื้นที่</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
 ${tl.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td><td>${r.z}</td><td>${chip(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></div></div>${legend()}`}
 
 const todayS=()=>new Date().toISOString().slice(0,10),addD=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
@@ -143,13 +149,13 @@ const pv=document.getElementById('pv-'+k);if(pv&&PH[k]){pv.insertAdjacentHTML('b
 function zoom(src){const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:99;cursor:zoom-out';const im=document.createElement('img');im.src=src;im.style.cssText='max-width:95%;max-height:95%';d.appendChild(im);d.onclick=()=>d.remove();document.body.appendChild(d)}
 
 const late=i=>i.st!='closed'&&i.due<todayS();
-function ist(l,z){const a=ISS.filter(i=>(l==null||i.l==l)&&(z==null||i.z==z));const c=a.filter(i=>i.st=='closed').length;
+function ist(l,z){const u=l==null?null:D[l];const a=ISS.filter(i=>(l==null||inU(i,u))&&(z==null||i.z==z));const c=a.filter(i=>i.st=='closed').length;
 return{t:a.length,c,r:a.filter(i=>i.st!='open').length,od:a.filter(late).length,p:a.length?c/a.length*100:null}}
 const ichip=p=>p==null?'<span class="mu">–</span>':chip(p);
 const stT={open:'รอตอบ',replied:'ตอบแล้ว รอ Audit ยืนยัน',closed:'ปิดแล้ว'};
 function iss(){
 const T=ist(),rp=T.t?T.r/T.t*100:null;
-const list=ISS.filter(i=>(FL.l=='all'||i.l==FL.l)&&(FL.st=='all'||i.st==FL.st)).sort((a,b)=>b.id-a.id);
+const list=ISS.filter(i=>(FL.l=='all'||inU(i,D[FL.l]))&&(FL.st=='all'||i.st==FL.st)).sort((a,b)=>b.id-a.id);
 const opt=(a,sel)=>a.map(([v,t])=>`<option value="${v}" ${v==sel?'selected':''}>${t}</option>`).join('');
 const lo=D.map((_,l)=>[l,ln(l)]);
 return `<div class="kpis">
@@ -172,10 +178,10 @@ ${D.map((_,l)=>`<tr><td><b>${ln(l)}</b></td>${Z.map((_,z)=>{const x=ist(l,z);ret
 <h2>รายการ Issue</h2><div style="display:flex;gap:8px;flex-wrap:wrap">
 <select onchange="FL.l=this.value;draw()">${opt([['all','ทุกไลน์'],...lo],FL.l)}</select>
 <select onchange="FL.st=this.value;draw()">${opt([['all','ทุกสถานะ'],['open','รอตอบ'],['replied','ตอบแล้ว'],['closed','ปิดแล้ว']],FL.st)}</select></div>
-${list.length?list.map(i=>`<div class="card iss ${i.st}"><div><b>#${i.id} ${ln(i.l)} · ${Z[i.z]}</b> <span class="mu">(${S[i.s]})</span>
+${list.length?list.map(i=>`<div class="card iss ${i.st}"><div><b>#${i.id} ${lnI(i)} · ${Z[i.z]}</b> <span class="mu">(${S[i.s]})</span>
 <span class="badge st-${i.st}">${stT[i.st]}</span><span class="badge ${i.sev=='สูง'?'D':i.sev=='กลาง'?'C':'B'}">${i.sev}</span>${late(i)?'<span class="badge st-open">เกินกำหนด</span>':''}</div>
 <div style="margin:6px 0">${esc(i.desc)}</div>${photoHTML(i.img,'รูปปัญหา')}
-<div class="mu">ผู้ตรวจ: ${esc(i.auditor||'-')} · พบ ${i.date} · ครบกำหนด ${i.due} · ผู้รับผิดชอบ: TL ${D[i.l].tl[i.z]||'—'} / Sup ${D[i.l].sup||'—'}</div>
+<div class="mu">ผู้ตรวจ: ${esc(i.auditor||'-')} · พบ ${i.date} · ครบกำหนด ${i.due} · ผู้รับผิดชอบ: TL ${(uOf(i)||{tl:[]}).tl[i.z]||'—'} / Sup ${(uOf(i)||{}).sup||'—'}</div>
 ${i.st=='open'?`<textarea id="r${i.id}" rows="2" placeholder="TL ตอบ: สาเหตุ / การแก้ไข" style="margin-top:8px"></textarea><label class="mu" style="display:block;margin-top:6px">รูปถ่ายหลังแก้ไข (บังคับ)<input type="file" accept="image/*" onchange="pickPh('r${i.id}',this)"></label><div id="pv-r${i.id}">${phHTML('r'+i.id)}</div><div class="ib"><button class="btn p" id="bt-r${i.id}" onclick="rep(${i.id})" ${PH['r'+i.id]?'':'disabled'}>ส่งคำตอบ</button><span class="mu" id="hn-r${i.id}" style="${PH['r'+i.id]?'display:none':''}">ต้องแนบรูปก่อนจึงจะส่งคำตอบได้</span></div>`
 :`<div class="card" style="margin-top:8px;background:var(--bg)"><span class="mu">คำตอบของพื้นที่${i.by?' โดย '+esc(i.by):''}:</span><br>${esc(i.reply)}${photoHTML(i.rimg,'รูปหลังแก้ไข')}</div>
 <div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">ตีกลับ</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิดใหม่</button>`}</div>`}
@@ -191,20 +197,21 @@ async function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
 const pw=await askPw('กรอกรหัสเพื่อลบ Issue #'+id);if(pw==null)return;
 let okp=false;try{okp=(await sha(pw))===DEL_HASH}catch(e){alert('เบราว์เซอร์นี้ตรวจรหัสไม่ได้ (ต้องเปิดผ่าน https)');return}
 if(!okp){alert('รหัสไม่ถูกต้อง');return}
-if(!confirm('ลบ Issue #'+id+' ('+ln(i.l)+' · '+Z[i.z]+') ?\nแถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้'))return;
+if(!confirm('ลบ Issue #'+id+' ('+lnI(i)+' · '+Z[i.z]+') ?\nแถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้'))return;
 ISS=ISS.filter(x=>x.id!=id);
 if(DB){try{DB.collection('issues').doc(String(id)).delete().catch(wf)}catch(e){wf(e)}}
 saveI();SY.dirty.is=1;if(SY.on)schedPush('is');else alert('ยังไม่ได้เปิดซิงก์ Sheet จึงลบเฉพาะในเครื่องนี้ (แถวใน Sheet ยังอยู่)');draw()}
 function addIss(){const g=id=>document.getElementById(id).value,t=g('ft').trim();if(!t){alert('กรุณากรอกรายละเอียดปัญหา');return}if(!PH.add){alert('กรุณาแนบรูปถ่ายปัญหาก่อนบันทึก');return}
-const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:+g('fl'),z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;ISS.push(ni);saveI(ni);draw()}
+const u=D[+g('fl')];if(!u){alert('ยังไม่มีไลน์ในแท็บ Scores ของ Sheet');return}
+const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:u.line-1,sh:u.shift,z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;ISS.push(ni);saveI(ni);draw()}
 function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){alert('กรุณากรอกคำตอบ');return}if(!PH['r'+id]){alert('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];i.reply=t;i.by=who();i.st='replied';saveI(i);draw()}
 function stI(id,st){const i=ISS.find(x=>x.id==id);i.st=st;saveI(i);draw()}
 
 const SHEET_URL='https://docs.google.com/spreadsheets/d/1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A/edit';
 let SH={ek:'sc',ik:'sc',msg:''};
-const SHD=['Line','Zone','Supervisor','TeamLeader','1S','2S','3S','4S','5S','6S','Area%'],IH=['ID','Line','Zone','Supervisor','TeamLeader','Category','Severity','Description','Auditor','DateFound','Due','Status','Reply','RepliedBy','Photo','ReplyPhoto'];
-function scoreRows(){const r=[SHD];D.forEach((d,l)=>Z.forEach((z,zi)=>r.push([l+1,z,d.sup,d.tl[zi],...d.s[zi],zp(l,zi)==null?'':+zp(l,zi).toFixed(1)])));return r}
-function issueRows(){return [IH,...ISS.slice().sort((a,b)=>a.id-b.id).map(i=>[i.id,i.l+1,Z[i.z],D[i.l].sup||'',D[i.l].tl[i.z]||'',(i.s+1)+'S',i.sev,i.desc,i.auditor||'',i.date,i.due,i.st,i.reply||'',i.by||'',dlink(i.img),dlink(i.rimg)])]}
+const SHD=['Line','Shift','Zone','Supervisor','TeamLeader','1S','2S','3S','4S','5S','6S','Area%'],IH=['ID','Line','Shift','Zone','Supervisor','TeamLeader','Category','Severity','Description','Auditor','DateFound','Due','Status','Reply','RepliedBy','Photo','ReplyPhoto'];
+function scoreRows(){const r=[SHD];D.forEach((d,l)=>Z.forEach((z,zi)=>r.push([d.line,d.shift,z,d.sup,d.tl[zi],...d.s[zi],zp(l,zi)==null?'':+zp(l,zi).toFixed(1)])));return r}
+function issueRows(){return [IH,...ISS.slice().sort((a,b)=>a.id-b.id).map(i=>[i.id,i.l+1,i.sh||'',Z[i.z],(uOf(i)||{}).sup||'',(uOf(i)||{tl:[]}).tl[i.z]||'',(i.s+1)+'S',i.sev,i.desc,i.auditor||'',i.date,i.due,i.st,i.reply||'',i.by||'',dlink(i.img),dlink(i.rimg)])]}
 const q=v=>{v=String(v==null?'':v);return /[",\n\t]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
 const toText=(rows,sep)=>rows.map(r=>r.map(sep=='\t'?v=>String(v==null?'':v).replace(/[\t\r\n]/g,' '):q).join(sep)).join('\n');
 function parseCSV(t){t=t.replace(/^\uFEFF/,'');const sep=(t.split('\n')[0]||'').includes('\t')?'\t':',';const rows=[];let r=[],c='',inq=false;
@@ -213,15 +220,17 @@ else if(ch=='"')inq=true;else if(ch==sep){r.push(c);c=''}else if(ch=='\n'||ch=='
 if(c!==''||r.length){r.push(c);rows.push(r)}return rows.filter(r=>r.some(x=>x.trim()!==''))}
 const nz=x=>String(x||'').trim().toLowerCase();
 const zIdx=v=>{const n=nz(v);let k=Z.findIndex(z=>nz(z)==n);if(k<0&&/^[1-4]$/.test(n))k=+n-1;return k};
-const lIdx=v=>{const m=String(v||'').match(/\d+/);const k=m?+m[0]-1:-1;return k>=0&&k<N?k:-1};
+const lIdx=v=>{const m=String(v||'').match(/\d+/);const k=m?+m[0]-1:-1;return k>=0&&k<99?k:-1};
 function readTable(text){const rows=parseCSV(text);if(rows.length<2)return null;const h=rows[0].map(nz);return{h,rows:rows.slice(1),col:n=>h.indexOf(nz(n))}}
 function impScores(text){const T=readTable(text);if(!T)return 'ไม่พบข้อมูล (ต้องมีหัวตารางและอย่างน้อย 1 แถว)';
-const cl=T.col('line'),cz=T.col('zone');if(cl<0||cz<0)return 'ไม่พบคอลัมน์ Line และ Zone';
-const cs=['1s','2s','3s','4s','5s','6s'].map(T.col),csup=T.col('supervisor'),ctl=T.col('teamleader');let n=0;const bad=[],ch=new Set();
-T.rows.forEach((r,ri)=>{const l=lIdx(r[cl]),z=zIdx(r[cz]);if(l<0||z<0){bad.push('แถว '+(ri+2)+': ไลน์/พื้นที่ไม่ถูกต้อง');return}
-cs.forEach((c,si)=>{if(c>=0&&String(r[c]).trim()!==''&&!isNaN(+r[c]))D[l].s[z][si]=Math.max(0,Math.min(100,Math.round(+r[c])))});
-if(csup>=0&&r[csup].trim())D[l].sup=r[csup].trim();if(ctl>=0&&r[ctl].trim())D[l].tl[z]=r[ctl].trim();ch.add(l);n++});
-ch.forEach(l=>save(l));return 'นำเข้าคะแนน '+n+' แถว อัปเดต '+ch.size+' ไลน์'+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,4).join('; ')+')':'')}
+const cl=T.col('line'),cz=T.col('zone'),csh=T.col('shift');if(cl<0||cz<0)return 'ไม่พบคอลัมน์ Line และ Zone';
+const cs=['1s','2s','3s','4s','5s','6s'].map(T.col),csup=T.col('supervisor'),ctl=T.col('teamleader');let n=0;const bad=[],M=new Map();
+T.rows.forEach((r,ri)=>{const l=lIdx(r[cl]),z=zIdx(r[cz]);if(l<0||z<0){if(String(r[cl]||'').trim())bad.push('แถว '+(ri+2)+': ไลน์/พื้นที่ไม่ถูกต้อง');return}
+const sh=csh>=0?String(r[csh]||'').trim():'',key=(l+1)+'|'+sh;let u=M.get(key);if(!u){u=mkU(l+1,sh);M.set(key,u)}
+cs.forEach((c,si)=>{if(c>=0&&String(r[c]).trim()!==''&&!isNaN(+r[c]))u.s[z][si]=Math.max(0,Math.min(100,Math.round(+r[c])))});
+if(csup>=0&&r[csup].trim())u.sup=r[csup].trim();if(ctl>=0&&r[ctl].trim())u.tl[z]=r[ctl].trim();n++});
+D=[...M.values()].sort((a,b)=>a.line-b.line||a.shift.localeCompare(b.shift,'th'));if(cur>=D.length)cur=0;save();
+return 'นำเข้าคะแนน '+n+' แถว · '+D.length+' ไลน์/กะ'+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,4).join('; ')+')':'')}
 const stMap={open:'open',replied:'replied',closed:'closed','รอตอบ':'open','ตอบแล้ว':'replied','ปิดแล้ว':'closed','ปิด':'closed'},svMap={high:'สูง',medium:'กลาง',low:'ต่ำ','สูง':'สูง','กลาง':'กลาง','ต่ำ':'ต่ำ'};
 function impIssues(text,prune){const T=readTable(text);if(!T)return 'ไม่พบข้อมูล (ต้องมีหัวตารางและอย่างน้อย 1 แถว)';
 if(T.col('line')<0||T.col('zone')<0||T.col('description')<0)return 'ไม่พบคอลัมน์ Line / Zone / Description';
@@ -229,14 +238,14 @@ const c=n=>T.col(n),g=(r,n)=>c(n)>=0?String(r[c(n)]||'').trim():'';let add=0,upd
 T.rows.forEach((r,ri)=>{const l=lIdx(g(r,'line')),z=zIdx(g(r,'zone')),d=g(r,'description');if(l<0||z<0||!d){bad.push('แถว '+(ri+2));return}
 let id=parseInt(g(r,'id'));const ex=id?ISS.find(x=>x.id==id):null;if(!id)id=Math.max(0,...ISS.map(i=>i.id))+1;seen.add(id);
 const sm=(g(r,'category')||g(r,'5s')).match(/[1-6]/);
-const o={id,l,z,s:sm?+sm[0]-1:0,sev:svMap[nz(g(r,'severity'))]||'กลาง',desc:d,auditor:g(r,'auditor'),date:g(r,'datefound')||todayS(),due:g(r,'due')||addD(7),st:stMap[nz(g(r,'status'))]||'open',reply:g(r,'reply')};
+const o={id,l,z,sh:g(r,'shift'),s:sm?+sm[0]-1:0,sev:svMap[nz(g(r,'severity'))]||'กลาง',desc:d,auditor:g(r,'auditor'),date:g(r,'datefound')||todayS(),due:g(r,'due')||addD(7),st:stMap[nz(g(r,'status'))]||'open',reply:g(r,'reply')};
 const by=g(r,'repliedby');if(by)o.by=by;const gid=u=>{const m=u.match(/\/d\/([\w-]+)/)||u.match(/[?&]id=([\w-]+)/);return m?'d:'+m[1]:''};const g1=gid(g(r,'photo')),g2=gid(g(r,'replyphoto'));if(g1)o.img=g1;if(g2)o.rimg=g2;
 if(ex){Object.assign(ex,o);saveI(ex);upd++}else{ISS.push(o);saveI(o);add++}});
 let pr=0;if(prune){const keep=ISS.filter(x=>seen.has(x.id));pr=ISS.length-keep.length;if(pr){ISS=keep;saveI()}}
 return 'นำเข้า Issue: เพิ่มใหม่ '+add+' · อัปเดต '+upd+(pr?' · ลบที่ไม่มีใน Sheet '+pr:'')+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,5).join(', ')+')':'')}
 function sh(){
 const ex=toText(SH.ek=='sc'?scoreRows():issueRows(),'\t');
-const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 6S (52 พื้นที่)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
+const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 6S (ตามไลน์/กะใน Sheet)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
 return `<div class="card"><b>0) เชื่อมอัตโนมัติด้วย Google Apps Script</b> <span class="mu">(ใช้เมื่อโฮสต์นอก Claude เช่น GitHub Pages)</span>
 <div class="fm" style="grid-template-columns:1fr"><label>Web App URL (ฝังไว้ให้แล้ว แก้ได้)<input id="apiu" value="${esc(API.u)}"></label></div>
 <div class="ib"><button class="btn p" onclick="saveApi()">บันทึกและเปิดซิงก์</button></div>
@@ -249,7 +258,7 @@ return `<div class="card"><b>0) เชื่อมอัตโนมัติด
 <textarea id="imp" rows="6" placeholder="วางข้อมูลจาก Sheet ที่นี่" style="margin-top:8px;font-size:12px"></textarea>
 <div class="ib"><button class="btn p" onclick="doImp()">นำเข้าข้อมูล</button></div>
 ${SH.msg?`<div class="card" style="margin-top:8px;background:var(--bg)">${esc(SH.msg)}</div>`:''}</div>
-<div class="mu" style="margin-top:10px">คะแนนใช้คีย์ Line + Zone จับคู่แถว (แก้ 1S–6S, ชื่อ Supervisor/TeamLeader ได้) · Issue ใช้ ID จับคู่ ถ้า ID ว่างหรือไม่ตรงจะเพิ่มเป็น Issue ใหม่ · Status ใช้ open / replied / closed · คอลัมน์ Area% ไม่ถูกนำเข้า (คำนวณใหม่เอง)</div>`}
+<div class="mu" style="margin-top:10px">คะแนนใช้คีย์ Line + Shift + Zone จับคู่แถว (แก้ 1S–6S, ชื่อ Supervisor/TeamLeader ได้) · Issue ใช้ ID จับคู่ ถ้า ID ว่างหรือไม่ตรงจะเพิ่มเป็น Issue ใหม่ · Status ใช้ open / replied / closed · คอลัมน์ Area% ไม่ถูกนำเข้า (คำนวณใหม่เอง)</div>`}
 function cp(b){const t=document.getElementById('exp');t.select();const ok=()=>{b.textContent='คัดลอกแล้ว ✓'};try{navigator.clipboard.writeText(t.value).then(ok,()=>{document.execCommand('copy');ok()})}catch(e){document.execCommand('copy');ok()}}
 async function dl(){const k=SH.ek,t=toText(k=='sc'?scoreRows():issueRows(),',');let dm=null;try{dm=window.claude?await claude.use('downloads'):null}catch(e){}
 if(!dm){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));a.download=(k=='sc'?'5s-scores':'5s-issues')+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
@@ -257,7 +266,7 @@ try{await dm.save({filename:(k=='sc'?'5s-scores':'5s-issues')+'.csv',data:'\uFEF
 function ldf(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{document.getElementById('imp').value=r.result};r.readAsText(f)}
 function doImp(){const t=document.getElementById('imp').value;if(!t.trim()){SH.msg='ยังไม่มีข้อมูลให้นำเข้า';draw();return}
 SH.msg=SH.ik=='sc'?impScores(t):impIssues(t);draw()}
-function draw(){nav();document.getElementById('m').innerHTML={ov,dt,rk,iss,sh}[tab]()}
+function draw(){if(cur>=D.length)cur=0;nav();document.getElementById('m').innerHTML=(['ov','dt','rk'].includes(tab)&&!D.length?empty():{ov,dt,rk,iss,sh}[tab]())}
 (async()=>{try{
 if(!window.claude)return;
 const u=await claude.use("user");if(u){const m=await u.me();ME=m.name||''}
@@ -265,7 +274,6 @@ const db=await claude.use("db");if(!db)return;
 DB=db;ISS=[];document.getElementById('mode').textContent='🟢 ข้อมูลร่วม ทุกคนเห็นตรงกัน';
 const busy=()=>/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);
 db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());if(!busy())draw()},console.error);
-db.collection('lines').onSnapshot(q=>{q.docs.forEach(d=>{const k=+d.id.slice(1);try{if(k>=0&&k<N)D[k]=JSON.parse(d.data().json)}catch(e){}});if(!busy())draw()},console.error);
 }catch(e){console.error(e)}})();
 
 const DEF_URL='https://script.google.com/macros/s/AKfycbzKPgiv9OwOcfzQLvr8Spxs0mXXX6jgvkJCKiVr3-va_1nB2N0HI8naT5sTeHDPZ0JR/exec';
@@ -289,7 +297,7 @@ try{localStorage.setItem('s5api_u',u)}catch(e){}
 MC=null;SY.mcp=null;SY.hs={sc:'',is:''};if(SY.on)syncOff();if(u)syncOn();else setSy('กรอก Web App URL')}
 function who(){if(!ME){try{ME=localStorage.getItem('s5me')||''}catch(e){}if(!ME){ME=(prompt('ชื่อของคุณ (บันทึกเป็นผู้ตอบ)')||'').trim();try{localStorage.setItem('s5me',ME)}catch(e){}}}return ME}
 const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
-const SK={sc:{ro:true,tab:'Scores',rng:'A1:K200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:P1000',rows:()=>issueRows()}};
+const SK={sc:{ro:true,tab:'Scores',rng:'A1:L200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:Q1000',rows:()=>issueRows()}};
 let SY={n:{},loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
 const nrm=rows=>JSON.stringify(rows.map(r=>{r=r.map(c=>String(c==null?'':c));while(r.length&&r[r.length-1]==='')r.pop();return r}).filter(r=>r.length));
 function setSy(t){if(t!=null)SY.st=t;const e=document.getElementById('sy');if(e)e.textContent=SY.st;const b=document.getElementById('syb');if(b)b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet'}
