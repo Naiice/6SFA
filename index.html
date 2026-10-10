@@ -1,70 +1,441 @@
 <!DOCTYPE html>
 <html lang="th"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
 <title>6S Dashboard – 13 Lines</title>
+<script>try{var t=localStorage.getItem('s6theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#eaf0ff;--bg2:#f7f9ff;--card:#ffffff;--tx:#172033;--mu:#7b8498;--bd:#e6eaf2;
-  --ac:#3157d5;--ac2:#5a66e9;--ac3:#8b94ff;--soft:#f5f7ff;--shadow:0 10px 30px rgba(45,67,135,.08);
-  --A:#20a86b;--B:#5ba447;--C:#e4a728;--D:#e34c67;--Ab:#e8f8f1;--Bb:#eef8e9;--Cb:#fff6dd;--Db:#fff0f3;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)
+  color-scheme:light;
+  --disp:"Chakra Petch","Sarabun","Noto Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai","Sarabun","Noto Sans Thai",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ground:#E4E7EB;--panel:#FAFBFC;--sunk:#F0F2F5;--hover:#EBEEF2;
+  --line:#D2D7DE;--line2:#B2BAC5;
+  --ink:#151B26;--ink2:#434D5B;--mute:#647081;--on-ink:#F4F6F8;
+  --yel:#FFC20E;--focus:#2563EB;
+  --A:#0E7D44;--B:#4F7D0B;--C:#F2A900;--D:#D12C32;
+  --Aon:#fff;--Bon:#fff;--Con:#2A1C00;--Don:#fff;
+  --Af:#1FB25F;--Bf:#86BB2B;--Cf:#F2A900;--Df:#E5484D;
+  --Ab:#DDF3E6;--Bb:#EAF3D2;--Cb:#FFF0CC;--Db:#FFE2E3;
+  --At:#0B6236;--Bt:#3E6208;--Ct:#7A4E00;--Dt:#A81B22;
+  --board:#0B1017;--bline:#222D3A;--btx:#E9EEF4;--bmute:#8D9AAB;
+  --lA:#2DD882;--lB:#A3E635;--lC:#FFB82E;--lD:#FF4D57;--loff:#1B2430;
+  --gA:rgba(45,216,130,.5);--gB:rgba(163,230,53,.45);--gC:rgba(255,184,46,.5);--gD:rgba(255,77,87,.55);
+  --chev:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23778294' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
-:root[data-theme="dark"]{--bg:#111827;--bg2:#151d2d;--card:#192335;--tx:#eef2ff;--mu:#9ba6bb;--bd:#2a3850;--ac:#6d82ff;--ac2:#7d72ff;--soft:#202c42;--shadow:0 10px 30px rgba(0,0,0,.18);--Ab:#143b2b;--Bb:#233a24;--Cb:#47370e;--Db:#4a1d28}
-html{scroll-padding-top:18px;scroll-behavior:smooth}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0D1117;--panel:#151B23;--sunk:#10151C;--hover:#1B232D;
+  --line:#262F3B;--line2:#3A4655;
+  --ink:#E8ECF1;--ink2:#B6BFCA;--mute:#8996A7;--on-ink:#0D1117;
+  --focus:#6EA8FF;
+  --A:#2DD882;--B:#9BD92F;--C:#FFB82E;--D:#FF5A62;
+  --Aon:#04150C;--Bon:#101A06;--Con:#241800;--Don:#2A0507;
+  --Af:#2DD882;--Bf:#A3E635;--Cf:#FFB82E;--Df:#FF5A62;
+  --Ab:#10382A;--Bb:#25360F;--Cb:#3A2B07;--Db:#3F1317;
+  --At:#6FE7A8;--Bt:#B5E85A;--Ct:#FFCF73;--Dt:#FF9AA0;
+  --board:#070A0F;--bline:#1E2833;
+}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:
-  radial-gradient(circle at 10% 0%,rgba(95,114,255,.15),transparent 32%),
-  radial-gradient(circle at 92% 8%,rgba(159,182,255,.20),transparent 30%),
-  linear-gradient(180deg,var(--bg) 0%,var(--bg2) 55%,#f8faff 100%);
-  color:var(--tx);font:14px/1.55 "Sarabun","Noto Sans Thai",Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.16) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:38px 38px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.18),transparent 42%)}
-header{max-width:1460px;margin:26px auto 0;padding:0 20px;position:relative;z-index:2}
-.hero{position:relative;overflow:hidden;border-radius:24px;padding:24px 26px 18px;color:#fff;background:linear-gradient(115deg,#2847c7 0%,#4d5ddd 48%,#2e50d4 100%);box-shadow:0 18px 44px rgba(49,87,213,.22)}
-.hero:before,.hero:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.18);border-radius:50%;pointer-events:none}
-.hero:before{width:360px;height:180px;left:-40px;top:22px;transform:rotate(-6deg)}
-.hero:after{width:520px;height:240px;left:90px;top:-105px;transform:rotate(9deg)}
-.hero-top{position:relative;z-index:1;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.brand{display:flex;align-items:center;gap:14px;min-width:0}.brand-mark{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:15px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);font-size:17px;font-weight:800;letter-spacing:.5px;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
-h1{font-size:23px;line-height:1.2;margin:2px 0 5px;font-weight:700;letter-spacing:-.25px}.sub{color:rgba(255,255,255,.78);font-size:12.5px;max-width:760px}
-.hero-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.hero-actions .btn{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.23);backdrop-filter:blur(12px)}.hero-actions .btn:hover{background:rgba(255,255,255,.20)}
-.sync-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid rgba(255,255,255,.19);border-radius:999px;background:rgba(255,255,255,.10);font-size:11.5px;color:rgba(255,255,255,.9);white-space:nowrap}.sync-dot{width:7px;height:7px;border-radius:50%;background:#7cf1b2;box-shadow:0 0 0 4px rgba(124,241,178,.13)}
-.hero-meta{position:relative;z-index:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:13px;border-top:1px solid rgba(255,255,255,.13)}.hero-meta .meta-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.10);font-size:11px;color:rgba(255,255,255,.82)}#sy{color:rgba(255,255,255,.78)!important}
-nav{position:relative;z-index:1;display:flex;gap:7px;margin:16px 0 0;flex-wrap:wrap}nav button{display:inline-flex;align-items:center;gap:7px;font:inherit;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:rgba(255,255,255,.82);padding:8px 13px;border-radius:10px;cursor:pointer;transition:.18s ease;backdrop-filter:blur(10px)}nav button:hover{background:rgba(255,255,255,.14);color:#fff;transform:translateY(-1px)}nav button.on{background:#fff;color:#304fc8;border-color:#fff;box-shadow:0 7px 18px rgba(22,36,93,.16)}.nav-ico{font-size:12px;opacity:.85}
-main{max-width:1460px;margin:auto;padding:18px 20px 44px;position:relative;z-index:1}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}.card{background:var(--card);border:1px solid rgba(218,224,237,.78);border-radius:17px;padding:17px;box-shadow:var(--shadow)}
-.kpi{position:relative;overflow:hidden;min-height:124px;transition:.18s ease}.kpi:hover{transform:translateY(-2px);box-shadow:0 15px 36px rgba(45,67,135,.11)}.kpi:after{content:"";position:absolute;width:100px;height:100px;border-radius:50%;right:-42px;top:-38px;background:linear-gradient(145deg,rgba(75,96,229,.10),rgba(110,153,255,.02))}.kpi-head{display:flex;align-items:center;gap:8px;color:var(--mu);font-size:12px}.kpi-icon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(145deg,#eff2ff,#f8f9ff);color:var(--ac);font-weight:800;border:1px solid #e7eaff}.kpi b{display:block;font-size:28px;line-height:1.15;margin:12px 0 5px;letter-spacing:-.8px}.kpi-foot{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--mu)}.kpi-note{color:var(--mu);font-size:11.5px}.kpi-danger .kpi-icon{background:var(--Db);color:var(--D);border-color:transparent}.kpi-success .kpi-icon{background:var(--Ab);color:var(--A);border-color:transparent}
-.analytics-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(290px,.75fr);gap:14px;margin-bottom:14px}.analytics-grid.equal{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{min-width:0}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-title{font-size:15px;font-weight:700;margin:0}.panel-sub{font-size:11.5px;color:var(--mu);margin-top:3px}.target-pill{padding:5px 9px;border-radius:999px;background:#f1f4ff;color:var(--ac);font-size:10.5px;font-weight:700;white-space:nowrap}
-.line-bars{display:flex;flex-direction:column;gap:12px}.line-bar-row{display:grid;grid-template-columns:86px 1fr 58px;gap:10px;align-items:center}.line-name{font-weight:600;font-size:12px}.track{height:9px;border-radius:99px;background:#eef1f8;overflow:hidden;position:relative}.track:after{content:"";position:absolute;left:85%;top:0;bottom:0;width:1px;background:rgba(227,76,103,.45)}.track>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#3355d2,#6773ef);box-shadow:0 0 12px rgba(74,92,218,.18)}.line-score{text-align:right;font-size:11.5px;font-weight:700;color:var(--tx)}
-.score-panel{display:flex;flex-direction:column;min-height:320px}.score-ring{--score:0;width:178px;aspect-ratio:1;border-radius:50%;margin:10px auto 18px;background:conic-gradient(#3857d7 calc(var(--score)*1%),#eef1f8 0);position:relative;display:grid;place-items:center}.score-ring:before{content:"";position:absolute;inset:16px;background:var(--card);border-radius:50%;box-shadow:inset 0 0 0 1px var(--bd)}.score-ring>div{position:relative;text-align:center}.score-ring strong{display:block;font-size:33px;line-height:1;font-weight:750;letter-spacing:-1px}.score-ring small{display:block;color:var(--mu);font-size:11px;margin-top:6px}.score-mini{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:auto}.score-mini>div{padding:10px;border-radius:12px;background:var(--soft);border:1px solid var(--bd)}.score-mini b{display:block;font-size:16px}.score-mini span{font-size:10.5px;color:var(--mu)}
-.category-list{display:flex;flex-direction:column;gap:11px}.cat-row{display:grid;grid-template-columns:145px 1fr 54px;gap:10px;align-items:center}.cat-name{font-size:11.5px;color:var(--tx)}.cat-val{text-align:right;font-size:11.5px;font-weight:700}.mini-track{height:7px;border-radius:99px;background:#eef1f8;overflow:hidden}.mini-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#7f8bf2,#3a5ad8)}
-.issue-snapshot{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.issue-stat{padding:14px;border-radius:13px;background:var(--soft);border:1px solid var(--bd)}.issue-stat .n{font-size:22px;font-weight:750;line-height:1.1}.issue-stat .t{font-size:10.5px;color:var(--mu);margin-top:5px}.issue-stat.danger .n{color:var(--D)}.issue-stat.good .n{color:var(--A)}
-.section-card{margin-top:14px}.table-title{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}.table-title b{font-size:14px}.table-title span{font-size:11px;color:var(--mu)}.performance-table-card{overflow:hidden}.performance-table-card .sc{max-height:520px;overflow:auto;border-radius:12px}.performance-table-card table{min-width:920px}.performance-table-card thead th{position:sticky;top:0;z-index:2;background:var(--card);box-shadow:0 1px 0 var(--bd)}.performance-table-card tfoot td{position:sticky;bottom:0;z-index:1;background:var(--card);box-shadow:0 -1px 0 var(--bd)}
-.sc{overflow:auto;border-radius:15px}table{border-collapse:separate;border-spacing:0;width:100%;min-width:720px}th,td{padding:11px 12px;text-align:center;border-bottom:1px solid var(--bd);white-space:nowrap}th{position:sticky;top:0;z-index:1;background:var(--card);font-size:10.5px;color:var(--mu);font-weight:650;text-transform:none;letter-spacing:.1px}td{font-size:12px}td:first-child,th:first-child,td.l,th.l{text-align:left}tbody tr.go{cursor:pointer;transition:.14s ease}tbody tr.go:hover,tbody tr:hover{background:#f8f9ff}tfoot td{background:#fafbff;font-weight:600}
-.chip{display:inline-block;min-width:58px;padding:4px 8px;border-radius:8px;font-weight:700;font-size:11px}.A{background:var(--Ab);color:var(--A)}.B{background:var(--Bb);color:var(--B)}.C{background:var(--Cb);color:var(--C)}.D{background:var(--Db);color:var(--D)}.N{background:var(--bd);color:var(--mu)}.lv.N{background:var(--mu);color:#fff}.fill-N{background:var(--bd)}
-.lv{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:7px;font-size:10.5px;font-weight:800;margin-right:5px}.lv.A{background:var(--A);color:#fff}.lv.B{background:var(--B);color:#fff}.lv.C{background:var(--C);color:#fff}.lv.D{background:var(--D);color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:14px;margin-top:14px}.grid>.card{transition:.18s ease}.grid>.card:hover{transform:translateY(-2px)}.zh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}.big{font-size:31px;font-weight:750;line-height:1;letter-spacing:-1px}.row{display:grid;grid-template-columns:128px 1fr 58px;gap:9px;align-items:center;margin:8px 0;font-size:11.5px}.bar{height:8px;border-radius:99px;background:#edf0f7;position:relative;overflow:hidden}.bar i{display:block;height:100%;border-radius:99px}.row input{width:58px;font:inherit;padding:5px;border:1px solid var(--bd);border-radius:7px;background:var(--soft);color:var(--tx);text-align:right}.mu{color:var(--mu);font-size:11.5px}.legend{display:flex;gap:12px;flex-wrap:wrap;margin:12px 2px 0;font-size:11px;color:var(--mu)}h2{font-size:15px;margin:20px 0 9px}.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:14px}.fill-A{background:linear-gradient(90deg,#20a86b,#48c98a)}.fill-B{background:linear-gradient(90deg,#5ba447,#83be65)}.fill-C{background:linear-gradient(90deg,#e4a728,#f0c651)}.fill-D{background:linear-gradient(90deg,#e34c67,#f17a8f)}
-.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:700;margin-left:4px}.st-open{background:var(--Db);color:var(--D)}.st-replied{background:var(--Cb);color:var(--C)}.st-closed{background:var(--Ab);color:var(--A)}
-.fm{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px;margin-top:10px}.fm label{font-size:11px;color:var(--mu);display:flex;flex-direction:column;gap:5px}select,.btn,input,textarea{font:inherit}select,.fm input,textarea,input[type="password"]{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:9px 11px;border-radius:9px;outline:none;transition:.15s ease}select:focus,.fm input:focus,textarea:focus,input[type="password"]:focus{border-color:#9badff;box-shadow:0 0 0 3px rgba(76,98,221,.10)}textarea{width:100%;resize:vertical}.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.16s ease}.btn:hover{transform:translateY(-1px);box-shadow:0 6px 15px rgba(45,67,135,.08)}.btn.p{background:linear-gradient(135deg,#3456d3,#5868e6);color:#fff;border-color:transparent;box-shadow:0 7px 17px rgba(54,84,205,.18)}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-.iss{border-left:0;margin-top:11px;position:relative;padding-left:20px}.iss:before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:4px;border-radius:10px;background:var(--bd)}.iss.open:before{background:var(--D)}.iss.replied:before{background:var(--C)}.iss.closed:before{background:var(--A)}.ib{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.ph{max-width:220px;max-height:160px;border-radius:11px;margin-top:8px;cursor:zoom-in;display:block;border:1px solid var(--bd)}
-a{color:var(--ac)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--ground);color:var(--ink);font:400 15px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,dl,dd{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--focus)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.board :focus-visible{outline-color:var(--yel)}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:fixed;left:12px;top:-64px;z-index:120;background:var(--ink);color:var(--on-ink);padding:10px 14px;border-radius:6px;text-decoration:none}.skip:focus{top:12px}
+.ic{flex:none;vertical-align:middle}
+.mu{color:var(--mute);font-size:13px}
+b,strong{font-weight:600}
 
-/* ===== Pro analytics additions ===== */
-.kpis.pro{grid-template-columns:repeat(6,minmax(0,1fr))}
-.tri-grid{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:14px;margin-bottom:14px}
-.chart-wrap{position:relative;min-height:245px}.chart-svg{display:block;width:100%;height:245px;overflow:visible}.chart-grid{stroke:#edf0f7;stroke-width:1}.chart-label{fill:var(--mu);font-size:10px}.chart-line-a{fill:none;stroke:#3658d7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-line-b{fill:none;stroke:#eb7188;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.chart-area-a{fill:url(#areaBlue);opacity:.26}.chart-dot-a{fill:#fff;stroke:#3658d7;stroke-width:2}.chart-dot-b{fill:#fff;stroke:#eb7188;stroke-width:2}.chart-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:10.5px;color:var(--mu);margin-top:6px}.legend-line{display:inline-flex;align-items:center;gap:6px}.legend-line:before{content:"";width:18px;height:3px;border-radius:99px;background:#3658d7}.legend-line.pink:before{background:#eb7188}
-.donut-layout{display:grid;grid-template-columns:138px 1fr;gap:18px;align-items:center;min-height:190px}.donut{--a:0;--b:0;width:136px;aspect-ratio:1;border-radius:50%;background:conic-gradient(var(--D) 0 calc(var(--a)*1%),var(--C) calc(var(--a)*1%) calc((var(--a) + var(--b))*1%),var(--A) calc((var(--a) + var(--b))*1%) 100%);position:relative;display:grid;place-items:center}.donut:after{content:"";position:absolute;inset:18px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 1px var(--bd)}.donut-center{position:relative;z-index:1;text-align:center}.donut-center b{display:block;font-size:27px;line-height:1}.donut-center span{font-size:10px;color:var(--mu)}.donut-legend{display:flex;flex-direction:column;gap:10px}.donut-item{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px}.donut-item .left{display:flex;align-items:center;gap:7px}.dot{width:8px;height:8px;border-radius:50%}.dot.open{background:var(--D)}.dot.replied{background:var(--C)}.dot.closed{background:var(--A)}
-.rank-list{display:flex;flex-direction:column;gap:9px}.rank-row{display:grid;grid-template-columns:28px 1fr auto;gap:9px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd)}.rank-row:last-child{border-bottom:0}.rank-no{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:#f0f3ff;color:var(--ac);font-size:10px;font-weight:800}.rank-row:first-child .rank-no{background:#fff3cf;color:#a77400}.rank-main{min-width:0}.rank-main b{font-size:11.5px}.rank-main small{display:block;color:var(--mu);font-size:9.8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rank-score{text-align:right;font-weight:800;font-size:12px}
-.critical-list{display:flex;flex-direction:column;gap:9px}.critical-item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:12px;background:var(--soft);cursor:pointer;transition:.16s ease}.critical-item:hover{transform:translateY(-1px);border-color:#cbd3f6;background:#f8f9ff}.critical-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--Db);color:var(--D);font-weight:800}.critical-main{min-width:0}.critical-main b{display:block;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.critical-main small{display:block;color:var(--mu);font-size:9.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.critical-due{text-align:right;font-size:9.8px;color:var(--mu)}.critical-due strong{display:block;color:var(--D);font-size:11px}
-.issue-analytics{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;margin-bottom:14px}.workflow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.workflow-step{padding:12px;border:1px solid var(--bd);border-radius:12px;background:var(--soft)}.workflow-step b{display:block;font-size:21px;line-height:1.1}.workflow-step span{font-size:10.5px;color:var(--mu)}.workflow-step.open b{color:var(--D)}.workflow-step.replied b{color:var(--C)}.workflow-step.closed b{color:var(--A)}
-.audit-form{position:relative;overflow:hidden}.audit-form:before{content:"";position:absolute;right:-80px;top:-90px;width:190px;height:190px;border-radius:50%;background:linear-gradient(135deg,rgba(62,88,220,.08),rgba(132,152,255,.02));pointer-events:none}.audit-title{display:flex;align-items:center;gap:10px;margin-bottom:4px}.audit-title .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#eef2ff;color:var(--ac);font-weight:800}.audit-title b{font-size:14px}.filterbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 10px}.filterbar .search{flex:1;min-width:220px}.filterbar input,.filterbar select{padding:8px 10px;border:1px solid var(--bd);border-radius:9px;background:var(--card);color:var(--tx);outline:none}.filterbar input:focus,.filterbar select:focus{border-color:#9badff;box-shadow:0 0 0 3px rgba(76,98,221,.10)}
-.issue-card{margin-top:10px;scroll-margin-top:20px}.issue-card.focused{outline:2px solid rgba(49,87,213,.38);box-shadow:0 16px 38px rgba(49,87,213,.15)}.issue-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.issue-title{min-width:0}.issue-title b{font-size:13px}.issue-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.issue-desc{font-size:13px;margin:10px 0}.issue-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.meta-box{padding:8px 10px;background:var(--soft);border:1px solid var(--bd);border-radius:10px}.meta-box span{display:block;color:var(--mu);font-size:9.5px}.meta-box b{display:block;font-size:10.8px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.empty-state{text-align:center;padding:34px 16px;color:var(--mu)}.empty-state .ico{font-size:30px;margin-bottom:8px}.section-note{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:8px;color:var(--mu);font-size:10.5px}
-@media(max-width:1180px){.kpis.pro{grid-template-columns:repeat(3,minmax(0,1fr))}.tri-grid{grid-template-columns:1fr 1fr}.tri-grid>.card:last-child{grid-column:1/-1}.issue-analytics{grid-template-columns:1fr}}
-@media(max-width:760px){.kpis.pro{grid-template-columns:repeat(2,minmax(0,1fr))}.tri-grid{grid-template-columns:1fr}.tri-grid>.card:last-child{grid-column:auto}.donut-layout{grid-template-columns:120px 1fr}.donut{width:118px}.issue-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.workflow{grid-template-columns:1fr}.chart-svg{height:220px}}
-@media(max-width:980px){header{margin-top:14px;padding:0 12px}.hero{padding:20px 18px 14px;border-radius:20px}.hero-top{flex-direction:column}.hero-actions{justify-content:flex-start}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.analytics-grid,.analytics-grid.equal{grid-template-columns:1fr}.score-panel{min-height:auto}.score-mini{margin-top:0}main{padding:14px 12px 34px}.two{grid-template-columns:1fr}}
-@media(max-width:580px){.brand-mark{width:42px;height:42px;flex-basis:42px}.hero{padding:17px 14px 12px}h1{font-size:19px}.sub{font-size:11px}.kpis{grid-template-columns:1fr 1fr;gap:9px}.kpi{min-height:112px;padding:13px}.kpi b{font-size:23px}.analytics-grid{gap:10px}.card{padding:14px;border-radius:14px}.line-bar-row{grid-template-columns:70px 1fr 48px}.cat-row{grid-template-columns:118px 1fr 48px}.issue-snapshot{grid-template-columns:1fr 1fr}nav{overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}nav button{white-space:nowrap}.hero-meta{gap:6px}.hero-meta .meta-pill{font-size:10px}.row{grid-template-columns:105px 1fr 50px}.two{grid-template-columns:minmax(0,1fr)}}
+/* ---------- layout ---------- */
+.app{min-height:100vh}
+.rail{display:none}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:8px;padding:calc(8px + env(safe-area-inset-top,0px)) calc(12px + env(safe-area-inset-right,0px)) 8px calc(12px + env(safe-area-inset-left,0px));background:var(--ground);border-bottom:1px solid var(--line)}
+.topbar .brand{margin-right:auto}
+main{display:block;width:100%;max-width:1500px;margin:0 auto;outline:0;padding:18px calc(14px + env(safe-area-inset-right,0px)) calc(92px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px))}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);background:var(--panel);border-top:1px solid var(--line);padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.tabbar button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;border:0;background:none;color:var(--mute);font-size:11.5px}
+.tabbar button.on{color:var(--ink);font-weight:600}
+.tabbar button.on::before{content:"";position:absolute;top:0;left:24%;right:24%;height:3px;border-radius:0 0 3px 3px;background:var(--yel)}
+.tabbar .nb{position:absolute;top:6px;left:calc(50% + 6px);margin:0}
+@media(min-width:1100px){
+  .app{display:grid;grid-template-columns:252px minmax(0,1fr)}
+  .rail{display:flex;flex-direction:column;gap:24px;position:sticky;top:0;height:100vh;padding:24px 14px 16px;background:var(--panel);border-right:1px solid var(--line);overflow:auto}
+  .topbar,.tabbar{display:none}
+  main{padding:30px 40px 64px}
+}
+
+/* ---------- brand / nav / sync ---------- */
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:8px;background:#161A22;color:var(--yel);font:700 18px/1 var(--disp);letter-spacing:.02em}
+.brand b{display:block;font:600 15.5px/1.25 var(--disp)}
+.brand small{display:block;font-size:12px;color:var(--mute);line-height:1.3}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{position:relative;display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px;border:0;border-radius:6px;background:none;color:var(--ink2);text-align:left}
+.nav button:hover{background:var(--hover);color:var(--ink)}
+.nav button.on{background:var(--ink);color:var(--on-ink);font-weight:500}
+.nav button.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:4px;border-radius:0 3px 3px 0;background:var(--yel)}
+.nb{display:inline-block;margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--Df);color:#fff;font:600 12px/22px var(--disp);text-align:center}
+.rail-foot{margin-top:auto;display:grid;gap:12px}
+.sync-body{display:grid;gap:8px;font-size:13px}
+.sync-state{display:flex;align-items:center;gap:9px;font-weight:600}
+.sdot{width:9px;height:9px;border-radius:50%;background:var(--line2);flex:none}
+[data-sync="on"] .sdot{background:var(--Af);box-shadow:0 0 0 4px rgba(31,178,95,.2);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(31,178,95,0)}}
+.sync-msg{color:var(--mute);line-height:1.5;word-break:break-word}.sync-msg:empty{display:none}
+.sync-act{display:flex;gap:8px;flex-wrap:wrap}
+.chip-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid var(--line2);border-radius:999px;background:var(--panel);font-size:13px;max-width:52vw}
+.chip-btn span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{display:grid;place-items:center;width:40px;height:40px;border:1px solid var(--line2);border-radius:999px;background:var(--panel);color:var(--ink)}
+.icon-btn:hover{background:var(--hover)}
+.rail .theme-btn{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border:1px solid var(--line);border-radius:6px;background:none;color:var(--ink2);font-size:13px}
+.rail .theme-btn:hover{background:var(--hover)}
+.sync-pop{position:fixed;z-index:39;left:12px;right:12px;top:calc(58px + env(safe-area-inset-top,0px));padding:14px 16px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.sync-pop[hidden]{display:none}
+@media(min-width:1100px){.sync-pop{display:none!important}}
+
+/* ---------- buttons / forms ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink);font-weight:500;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--hover)}
+.btn.p{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+.btn.p:hover{opacity:.9}
+.btn.dn{color:var(--Dt);border-color:var(--Df)}
+.btn.dn.p{background:var(--D);border-color:var(--D);color:var(--Don)}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .ic{margin:0 -2px}
+.ib{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.fld{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--ink2);min-width:0}
+.in{width:100%;min-height:42px;padding:9px 12px;border:1px solid var(--line2);border-radius:6px;background:var(--panel);color:var(--ink);outline:none}
+.in:focus-visible{border-color:var(--focus);box-shadow:0 0 0 3px rgba(37,99,235,.18);outline:0}
+select.in{appearance:none;-webkit-appearance:none;padding-right:34px;background-image:var(--chev);background-repeat:no-repeat;background-position:right 12px center}
+textarea.in{min-height:88px;resize:vertical;line-height:1.55}
+.fm{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px;margin-top:12px}
+.fbtn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 14px;border:1px dashed var(--line2);border-radius:6px;background:var(--sunk);font-weight:500;cursor:pointer}
+.fbtn:hover{background:var(--hover)}
+.fbtn:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+.fbtn input{position:absolute;width:1px;height:1px;opacity:0}
+.hint{font-size:12.5px;color:var(--mute)}
+.pvw{display:block;max-width:180px;max-height:130px;border-radius:6px;margin-top:8px;border:1px solid var(--line)}
+.pvn{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;color:var(--mute)}
+
+/* ---------- page head / panels ---------- */
+.pg-h{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.pg-h h1{font:600 26px/1.35 var(--disp);letter-spacing:-.005em}
+.pg-h p{color:var(--mute);margin-top:2px}
+.pn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 16px 18px;min-width:0}
+.pn-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.pn-h h2{font:600 16px/1.45 var(--disp)}
+.pn-h p{font-size:13px;color:var(--mute);margin-top:1px}
+.pn-h .aside{font-size:12.5px;color:var(--mute);white-space:nowrap;padding-top:2px}
+.cols{display:grid;gap:14px;margin-bottom:14px}
+@media(min-width:760px){.cols.c3{grid-template-columns:repeat(2,minmax(0,1fr))}.cols.c3>:last-child{grid-column:1/-1}}
+@media(min-width:900px){.cols.w{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}.cols.n{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr)}}
+@media(min-width:1280px){.cols.c3{grid-template-columns:repeat(3,minmax(0,1fr))}.cols.c3>:last-child{grid-column:auto}}
+@media(min-width:760px){.pn{padding:18px 20px 20px}}
+.sec{margin-top:26px}
+.empty-mini{display:flex;align-items:center;gap:10px;padding:18px 4px;color:var(--mute)}
+.empty-mini .ic{color:var(--Af)}
+.empty{display:grid;justify-items:center;gap:8px;text-align:center;padding:44px 20px}
+.empty p{max-width:520px;color:var(--mute)}
+.empty .lamps{display:flex;gap:6px;margin-bottom:6px}
+.empty .lamps i{display:block;width:34px;height:20px;border-radius:5px;background:var(--line2);opacity:.6}
+.empty.load .lamps i{animation:blink 1.2s ease-in-out infinite}.empty.load .lamps i:nth-child(2){animation-delay:.15s}.empty.load .lamps i:nth-child(3){animation-delay:.3s}.empty.load .lamps i:nth-child(4){animation-delay:.45s}
+@keyframes blink{50%{opacity:.15}}
+
+/* ---------- grade primitives ---------- */
+.chip{display:inline-block;min-width:56px;padding:3px 8px;border-radius:4px;font:600 12.5px/1.5 var(--disp);font-variant-numeric:tabular-nums;text-align:center}
+.chip.A{background:var(--Ab);color:var(--At)}.chip.B{background:var(--Bb);color:var(--Bt)}.chip.C{background:var(--Cb);color:var(--Ct)}.chip.D{background:var(--Db);color:var(--Dt)}.chip.N{background:var(--sunk);color:var(--mute)}
+.lvw{display:inline-flex;align-items:center;white-space:nowrap}
+.lv{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:6px;border-radius:5px;font:700 12px/1 var(--disp)}
+.lv.A{background:var(--A);color:var(--Aon)}.lv.B{background:var(--B);color:var(--Bon)}.lv.C{background:var(--C);color:var(--Con)}.lv.D{background:var(--D);color:var(--Don)}.lv.N{background:var(--line2);color:var(--on-ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;font-size:12.5px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center}
+.bar{position:relative;height:8px;border-radius:4px;background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line)}
+.bar i{display:block;height:100%;border-radius:4px}
+.bar::after{content:"";position:absolute;left:85%;top:-3px;bottom:-3px;width:2px;border-radius:1px;background:var(--ink);opacity:.5}
+.fill-A{background:var(--Af)}.fill-B{background:var(--Bf)}.fill-C{background:var(--Cf)}.fill-D{background:var(--Df)}.fill-N{background:var(--line2)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.badge.A,.badge.st-closed{background:var(--Ab);color:var(--At)}.badge.B{background:var(--Bb);color:var(--Bt)}.badge.C,.badge.st-replied{background:var(--Cb);color:var(--Ct)}.badge.D,.badge.st-open{background:var(--Db);color:var(--Dt)}
+.badge.late{background:#161A22;color:var(--yel)}
+
+/* ---------- Andon board ---------- */
+.board{position:relative;margin-bottom:14px;padding:18px 16px 14px;border-radius:10px;border:1px solid var(--bline);background:var(--board);color:var(--btx)}
+.b-main{display:grid;gap:20px}
+.b-sum{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 40px}
+.b-k{font-size:13px;color:var(--bmute)}
+.b-num{display:flex;align-items:baseline;gap:4px;margin:2px 0 6px;font-family:var(--disp)}
+.b-num b{font-size:54px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.b-num span{font-size:22px;font-weight:500;color:var(--bmute)}
+.b-grade{display:flex;align-items:center;gap:6px;font-size:14px}
+.b-grade .tg{margin-left:8px;color:var(--bmute);font-size:13px}
+.b-facts{display:grid;align-content:start;gap:12px;min-width:min(100%,250px);flex:1 1 250px;max-width:360px}
+.b-gauge{position:relative;height:6px;border-radius:3px;background:var(--loff)}
+.b-gauge i{display:block;height:100%;border-radius:3px;background:var(--lA)}
+.b-gauge.B i{background:var(--lB)}.b-gauge.C i{background:var(--lC)}.b-gauge.D i{background:var(--lD)}
+.b-gauge::after{content:"";position:absolute;left:85%;top:-4px;bottom:-4px;width:2px;background:var(--btx);opacity:.8;border-radius:1px}
+.b-cnt{display:flex;gap:28px}
+.b-cnt div{display:grid}
+.b-cnt dt{font-size:12.5px;color:var(--bmute)}
+.b-cnt dd{font:700 24px/1.2 var(--disp);font-variant-numeric:tabular-nums}
+.b-cnt dd small{font-size:14px;font-weight:500;color:var(--bmute)}
+.b-cnt dd.bad{color:var(--lD)}
+.b-ln{display:grid;gap:2px}
+.ln-link{display:flex;justify-content:space-between;gap:10px;align-items:center;min-height:30px;padding:0 8px;margin:0 -8px;border:0;border-radius:6px;background:none;color:var(--btx);font-size:13px;text-align:left}
+.ln-link:hover{background:rgba(255,255,255,.07)}
+.ln-link span{color:var(--bmute)}
+.ln-link b{font:600 13px var(--disp);font-variant-numeric:tabular-nums}
+.mx-wrap{overflow-x:auto;padding:2px 4px 6px;margin:0 -4px}
+.mx{display:flex;gap:6px}
+.mx-zones{position:sticky;left:0;z-index:1;flex:0 0 72px;display:flex;flex-direction:column;gap:6px;padding-top:26px;background:var(--board)}
+.mx-zones::before{display:none}
+.mx-zones>span{display:flex;align-items:center;height:30px;font-size:12.5px;color:var(--bmute);white-space:nowrap}
+.mx-zones>.tot{height:26px;align-items:flex-start}
+.mx-zones .zs{display:none}
+.tw{flex:1 0 46px;display:flex;flex-direction:column;gap:6px;min-width:0;padding:0 0 6px;border:0;border-radius:8px;background:none;color:inherit;text-align:center}
+.tw:hover{background:rgba(255,255,255,.06)}
+.tw-l{height:20px;font:600 12.5px/20px var(--disp);color:var(--btx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tw-l small{margin-left:3px;font-size:10.5px;font-weight:500;color:var(--bmute)}
+.lamp{display:grid;place-items:center;height:30px;border-radius:6px;font:600 12.5px/1 var(--disp);font-variant-numeric:tabular-nums;color:#05110A;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.lamp.A{background:var(--lA);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 14px -2px var(--gA)}
+.lamp.B{background:var(--lB);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 14px -2px var(--gB)}
+.lamp.C{background:var(--lC);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 14px -2px var(--gC)}
+.lamp.D{background:var(--lD);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 14px -2px var(--gD)}
+.lamp.N{background:var(--loff);color:#667385;box-shadow:none}
+.tw-t{display:grid;justify-items:center;gap:5px;padding-top:2px;color:var(--btx)}
+.tw-t b{font:700 13.5px/1 var(--disp);font-variant-numeric:tabular-nums}
+.tw-t.A{color:var(--lA)}.tw-t.B{color:var(--lB)}.tw-t.C{color:var(--lC)}.tw-t.D{color:var(--lD)}
+.tw-bar{position:relative;display:block;width:80%;height:3px;border-radius:2px;background:var(--loff)}
+.tw-bar i{display:block;height:100%;border-radius:2px;background:currentColor}
+.tw-bar::after{content:"";position:absolute;left:85%;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.6)}
+.b-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;margin-top:10px;padding-top:12px;border-top:1px solid var(--bline);font-size:12.5px;color:var(--bmute)}
+.b-foot .legend{margin:0;color:inherit}
+.board .lv.A{background:var(--lA);color:#05110A}.board .lv.B{background:var(--lB);color:#0A1202}.board .lv.C{background:var(--lC);color:#201400}.board .lv.D{background:var(--lD);color:#2A0507}
+.boot .lamp{animation:lampOn .55s both;animation-delay:calc(var(--i)*16ms)}
+@keyframes lampOn{from{opacity:.12;filter:saturate(0) brightness(.6)}60%{filter:brightness(1.35)}to{opacity:1;filter:none}}
+@media(min-width:760px){.board{padding:22px 24px 16px}.b-num b{font-size:60px}}
+@media(min-width:1380px){.b-main{grid-template-columns:270px minmax(0,1fr);gap:34px}.b-sum{flex-direction:column;align-items:stretch;gap:18px}.b-facts{flex:none;max-width:none}}
+@media(max-width:699px){
+  .mx-wrap{overflow:visible;padding:0;margin:0}
+  .mx{flex-direction:column;gap:2px}
+  .mx-zones{position:static;flex:none;display:grid;grid-template-columns:50px repeat(4,minmax(0,1fr)) 54px;gap:5px;padding:0 0 4px}
+  .mx-zones::before{display:block;content:""}
+  .mx-zones>span,.mx-zones>.tot{height:auto;justify-content:center;font-size:11.5px}
+  .mx-zones .zf{display:none}.mx-zones .zs{display:inline}
+  .tw{flex:none;display:grid;grid-template-columns:50px repeat(4,minmax(0,1fr)) 54px;align-items:center;gap:5px;padding:3px 0}
+  .tw-l{height:auto;text-align:left;padding-left:6px}
+  .lamp{height:34px}
+  .tw-t{padding:0;gap:4px}
+}
+
+/* ---------- KPI strip ---------- */
+.strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-bottom:14px;border:1px solid var(--line);border-radius:8px;background:var(--line);overflow:hidden}
+.kp{position:relative;padding:14px 16px 15px;background:var(--panel)}
+.kp-k{font-size:13px;color:var(--ink2)}
+.kp-v{display:block;margin:3px 0 1px;font:700 30px/1.2 var(--disp);font-variant-numeric:tabular-nums}
+.kp-v small{font-size:15px;font-weight:500;color:var(--mute)}
+.kp-n{font-size:12.5px;color:var(--mute)}
+.kp.bad .kp-v{color:var(--Dt)}
+.kp.hz{padding-left:24px}
+.kp.hz::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:repeating-linear-gradient(-45deg,var(--yel) 0 6px,#161A22 6px 12px)}
+@media(min-width:900px){.strip.s4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(min-width:760px){.strip.s6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:1340px){.strip.s6{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+/* ---------- lists ---------- */
+.lst{display:flex;flex-direction:column}
+.li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:10px 6px;margin:0;border:0;border-top:1px solid var(--line);background:none;text-align:left}
+.li:first-child{border-top:0}
+button.li:hover{background:var(--hover)}
+.li-m{min-width:0}
+.li-m b{display:block;font-size:13.5px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li-m small{display:block;font-size:12.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li-r{text-align:right;font-size:12.5px;line-height:1.35}
+.li-r small{display:block;color:var(--mute)}
+.li-r strong{color:var(--Dt)}
+.rk-n{width:22px;font:600 16px/1 var(--disp);color:var(--mute);text-align:center}
+.lst .li:first-child .rk-n{color:var(--ink)}
+.ci{display:grid;place-items:center;width:34px;height:34px;border-radius:6px;background:var(--Cb);color:var(--Ct)}
+.ci.hi{background:var(--Db);color:var(--Dt)}
+.ci.lo{background:var(--Bb);color:var(--Bt)}
+.ci.late{background:repeating-linear-gradient(-45deg,var(--yel) 0 5px,#161A22 5px 10px);color:#fff;position:relative}
+.ci.late .ic{background:#161A22;border-radius:50%;padding:3px;width:22px;height:22px;color:var(--yel)}
+.cr{display:grid;grid-template-columns:minmax(100px,132px) minmax(0,1fr) 54px;align-items:center;gap:12px;padding:8px 0}
+.cr span:first-child{font-size:13.5px}
+.cr b{text-align:right;font:600 13.5px var(--disp);font-variant-numeric:tabular-nums}
+
+/* ---------- chart / donut / pipeline ---------- */
+.chart-svg{display:block;width:100%;height:auto;overflow:visible}
+.cg{stroke:var(--line);stroke-width:1}
+.cl{fill:var(--mute);font-size:11px;font-family:var(--body)}
+.c-a{fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.c-b{fill:none;stroke:var(--Df);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:6 5}
+.c-area{opacity:.1;fill:var(--ink)}
+.c-da{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.c-db{fill:var(--panel);stroke:var(--Df);stroke-width:2}
+.chart-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--mute)}
+.chart-legend span{display:inline-flex;align-items:center;gap:8px}
+.chart-legend span::before{content:"";width:20px;height:0;border-top:3px solid var(--ink);border-radius:2px}
+.chart-legend .due::before{border-top:3px dashed var(--Df)}
+.donut-layout{display:flex;align-items:center;gap:22px;flex-wrap:wrap;min-height:170px}
+.donut{--a:0;--b:0;position:relative;display:grid;place-items:center;width:140px;aspect-ratio:1;border-radius:50%;background:conic-gradient(var(--Df) 0 calc(var(--a)*1%),var(--Cf) calc(var(--a)*1%) calc((var(--a) + var(--b))*1%),var(--Af) calc((var(--a) + var(--b))*1%) 100%)}
+.donut:after{content:"";position:absolute;inset:20px;border-radius:50%;background:var(--panel)}
+.donut.z{background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line)}
+.donut-center{position:relative;z-index:1;text-align:center}
+.donut-center b{display:block;font:700 28px/1 var(--disp)}
+.donut-center span{font-size:12px;color:var(--mute)}
+.donut-legend{display:grid;gap:10px;flex:1 1 150px;min-width:150px}
+.donut-item{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13.5px}
+.donut-item .left{display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:3px}.dot.open{background:var(--Df)}.dot.replied{background:var(--Cf)}.dot.closed{background:var(--Af)}
+.pipe{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line);margin:6px 0 14px}
+.pipe i{display:block;height:100%}
+.pipe-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pipe-k div{display:grid;gap:0;padding-left:12px;border-left:4px solid var(--line2)}
+.pipe-k div.open{border-color:var(--Df)}.pipe-k div.replied{border-color:var(--Cf)}.pipe-k div.closed{border-color:var(--Af)}
+.pipe-k b{font:700 26px/1.2 var(--disp)}
+.pipe-k span{font-size:12.5px;color:var(--mute);line-height:1.4}
+
+/* ---------- tables ---------- */
+.sc{overflow:auto;border:1px solid var(--line);border-radius:6px}
+.sc.tall{max-height:640px}
+table{width:100%;border-collapse:separate;border-spacing:0}
+th,td{padding:10px 12px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--line)}
+thead th{position:sticky;top:0;z-index:2;background:var(--sunk);font-size:12.5px;font-weight:600;color:var(--ink2)}
+td{font-size:13.5px}
+td:first-child,th:first-child,td.l,th.l{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--hover)}
+tbody tr.go{cursor:pointer}
+tfoot td{position:sticky;bottom:0;z-index:1;background:var(--sunk);border-top:1px solid var(--line2);border-bottom:0;font-weight:600}
+.sc td:first-child,.sc th:first-child{position:sticky;left:0;z-index:1}
+.sc td:first-child{background:var(--panel)}
+.sc thead th:first-child{z-index:3;background:var(--sunk)}
+.sc tfoot td:first-child{background:var(--sunk)}
+tbody tr:hover td:first-child{background:var(--hover)}
+.sb{display:inline-flex;align-items:center;gap:4px;border:0;background:none;padding:0;font:inherit;color:inherit;font-weight:inherit}
+.sb:hover{color:var(--ink)}
+th[aria-sort="ascending"] .sb::after{content:"↑"}th[aria-sort="descending"] .sb::after{content:"↓"}
+.mb{display:block;width:64px;margin:4px auto 0}
+.mbar{height:5px;border-radius:3px;background:var(--sunk);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}.mbar i{display:block;height:100%}
+.rk-tbl td:first-child{width:44px;font:600 14px var(--disp);color:var(--mute);text-align:center}
+
+/* ---------- detail ---------- */
+.picks{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px 10px;scroll-snap-type:x proximity}
+.pick{position:relative;flex:0 0 auto;display:grid;justify-items:center;min-width:56px;padding:6px 9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);scroll-snap-align:start}
+.pick b{font:700 16px/1.25 var(--disp)}
+.pick small{min-height:15px;font-size:10.5px;line-height:15px;color:var(--mute)}
+.pick span{font:600 12px/1.3 var(--disp);color:var(--ink2);font-variant-numeric:tabular-nums}
+.pick::after{content:"";position:absolute;left:9px;right:9px;bottom:0;height:3px;border-radius:2px 2px 0 0;background:var(--line2)}
+.pick.A::after{background:var(--Af)}.pick.B::after{background:var(--Bf)}.pick.C::after{background:var(--Cf)}.pick.D::after{background:var(--Df)}
+.pick:hover{background:var(--hover)}
+.pick.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}.pick.on small,.pick.on span{color:inherit;opacity:.8}
+.sum{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.sum h2{font:600 22px/1.35 var(--disp)}
+.sum .who{color:var(--ink2)}
+.sum .big{font:700 40px/1 var(--disp);font-variant-numeric:tabular-nums;text-align:right}
+.zg{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){.zg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(min-width:1600px){.zg{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.zh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.zh h3{font:600 17px/1.4 var(--disp)}
+.zh .big{font:700 30px/1 var(--disp);font-variant-numeric:tabular-nums}
+.sr{display:grid;grid-template-columns:minmax(104px,38%) minmax(0,1fr) 38px;align-items:center;gap:10px;padding:6px 0;font-size:13.5px}
+.sr b{text-align:right;font:600 13.5px var(--disp);font-variant-numeric:tabular-nums}
+.zf2{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+
+/* ---------- issues ---------- */
+.iss{position:relative;margin-top:10px;padding:16px 16px 16px 26px;border-radius:8px}
+.iss::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;border-radius:8px 0 0 8px;background:var(--line2)}
+.iss.open::before{background:var(--Df)}.iss.replied::before{background:var(--Cf)}.iss.closed::before{background:var(--Af)}
+.iss.late::before{background:repeating-linear-gradient(-45deg,var(--yel) 0 7px,#161A22 7px 14px)}
+.iss.focused{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.issue-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.issue-title b{font:600 15.5px/1.4 var(--disp)}
+.issue-tags{display:flex;gap:6px;flex-wrap:wrap}
+.stp{display:flex;align-items:center;flex-wrap:wrap;gap:6px 0;margin:10px 0 2px;font-size:12.5px;color:var(--mute)}
+.stp span{display:inline-flex;align-items:center;gap:6px}
+.stp span::before{content:"";width:11px;height:11px;border-radius:50%;border:2px solid var(--line2);background:var(--panel)}
+.stp span.done{color:var(--ink2)}.stp span.done::before{background:var(--ink);border-color:var(--ink)}
+.stp span.now{color:var(--ink);font-weight:600}.stp span.now::before{background:var(--yel);border-color:var(--ink)}
+.stp i{flex:0 0 22px;height:2px;margin:0 8px;background:var(--line2)}.stp i.done{background:var(--ink)}
+.issue-desc{margin:12px 0 4px;white-space:pre-wrap;word-break:break-word}
+.phs{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
+.phf{margin:0}
+.phf figcaption{margin-top:4px;font-size:12px;color:var(--mute)}
+.pimg{display:block;max-width:min(100%,240px);max-height:170px;border-radius:6px;border:1px solid var(--line);cursor:zoom-in}
+.ph-d{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink2)}
+.reply{margin-top:12px;padding:12px 14px;border-radius:6px;background:var(--sunk);border:1px solid var(--line)}
+.reply .mu{display:block;margin-bottom:2px}
+.meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.meta div{min-width:0;padding:8px 10px;border-radius:6px;background:var(--sunk);border:1px solid var(--line)}
+.meta span{display:block;font-size:11.5px;color:var(--mute)}
+.meta b{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta .lateb{color:var(--Dt)}
+@media(min-width:760px){.meta{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fbar{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0}
+.srch{position:relative;grid-column:1/-1}
+.srch .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mute);pointer-events:none}
+.srch .in{padding-left:38px}
+@media(min-width:900px){.fbar{grid-template-columns:minmax(220px,1.7fr) repeat(4,minmax(110px,1fr)) auto}.srch{grid-column:auto}}
+.list-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.list-h h2{font:600 18px/1.4 var(--disp)}
+.note{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--mute)}
+.res{margin-top:12px;padding:10px 12px;border-radius:6px;background:var(--sunk);border:1px solid var(--line);font-size:13.5px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;white-space:pre}
+
+/* ---------- overlays ---------- */
+.mdl{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(8,11,16,.64)}
+.mdl-box{width:min(420px,100%);padding:22px;border:1px solid var(--line2);border-radius:10px;background:var(--panel);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.mdl-box h3{font:600 18px/1.4 var(--disp);margin-bottom:6px}
+.mdl-err{min-height:20px;margin-top:6px;font-size:13px;color:var(--Dt)}
+.toasts{position:fixed;z-index:95;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;width:min(480px,calc(100% - 24px));pointer-events:none}
+.toast{pointer-events:auto;padding:11px 16px;border-radius:8px;background:var(--ink);color:var(--on-ink);font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.toast.err{background:var(--D);color:var(--Don)}
+@media(min-width:1100px){.toasts{bottom:28px}}
+.lbx{position:fixed;inset:0;z-index:99;display:grid;place-items:center;background:rgba(5,8,12,.92);cursor:zoom-out}
+.lbx img{max-width:94vw;max-height:88vh;border-radius:6px}
+.lateb{color:var(--Dt)}
+#newissue{scroll-margin-top:84px}
+.lbx button{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px}
+
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
+@media print{
+  .rail,.topbar,.tabbar,.toasts,.btn,.fbar,.sync-pop{display:none!important}
+  .app{display:block}main{padding:0;max-width:none}
+  body{background:#fff}
+  .board,.lamp,.lv,.chip,.fill-A,.fill-B,.fill-C,.fill-D{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pn,.board,.iss{break-inside:avoid}
+}
 </style></head><body>
-<header><div class="hero"><div class="hero-top"><div class="brand"><div class="brand-mark">6S</div><div><h1>6S Dashboard · Final Assembly</h1><div class="sub">Workplace Organization · Safety · Continuous Improvement — 1 Line = 1 Supervisor + 4 Team Leaders</div></div></div><div class="hero-actions"><span class="sync-chip"><span class="sync-dot"></span><span id="mode">💾 เก็บในเครื่องนี้</span></span><button class="btn" id="syb" onclick="toggleSync()">เปิดซิงก์ Google Sheet</button><button class="btn" id="syf" onclick="permFix()" style="display:none">จัดการสิทธิ์</button></div></div><div class="hero-meta"><span class="meta-pill">🎯 Target ≥ 85%</span><span class="meta-pill">👥 หัวไลน์ · กลางไลน์ · Cooling · ท้ายไลน์</span><span id="sy" class="mu"></span></div><nav id="nav"></nav></div></header>
-<main id="m"></main>
+<a class="skip" href="#m">ข้ามไปยังเนื้อหา</a>
+<div class="app">
+  <aside class="rail">
+    <div class="brand"><span class="mark" aria-hidden="true">6S</span><div><b>6S Dashboard</b><small>Final Assembly</small></div></div>
+    <nav id="nav" class="nav" aria-label="เมนูหลัก"></nav>
+    <div class="rail-foot">
+      <div class="sync-body js-sync"></div>
+      <button class="theme-btn js-theme" onclick="toggleTheme()"></button>
+    </div>
+  </aside>
+  <div>
+    <header class="topbar">
+      <div class="brand"><span class="mark" aria-hidden="true">6S</span><div><b>6S Dashboard</b><small>Final Assembly</small></div></div>
+      <button class="chip-btn" id="synctoggle" aria-expanded="false" aria-controls="syncpop" onclick="toggleSyncPop()"><span class="sdot"></span><span class="js-mode">เก็บในเครื่องนี้</span></button>
+      <button class="icon-btn js-theme" onclick="toggleTheme()"></button>
+    </header>
+    <div class="sync-pop" id="syncpop" hidden><div class="sync-body js-sync"></div></div>
+    <main id="m" tabindex="-1"></main>
+  </div>
+</div>
+<nav id="tabbar" class="tabbar" aria-label="เมนูหลัก"></nav>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 <script>
 const Z=['หัวไลน์','กลางไลน์','Cooling','ท้ายไลน์'];
 const S=['1S สะสาง','2S สะดวก','3S สะอาด','4S สร้างมาตรฐาน','5S สร้างนิสัย','6S ความปลอดภัย'];
@@ -73,7 +444,7 @@ const pad2=n=>String(n).padStart(2,'0'),mkU=(line,shift)=>({line,shift:shift||''
 let D=[];
 try{const x=JSON.parse(localStorage.getItem('s5v4'));if(Array.isArray(x))D=x}catch(e){}
 let DB=null,ME='';
-const wf=e=>{console.error(e);alert('บันทึกขึ้นระบบกลางไม่สำเร็จ: '+((e&&(e.message||e.code))||'ไม่ทราบสาเหตุ')+'\n(ตรวจสอบว่าบัญชีของคุณมีสิทธิ์ Contributor ขึ้นไป หรือรูปมีขนาดใหญ่เกินไป)')};
+const wf=e=>{console.error(e);toast('บันทึกขึ้นระบบกลางไม่สำเร็จ: '+((e&&(e.message||e.code))||'ไม่ทราบสาเหตุ')+' (ตรวจสอบว่าบัญชีของคุณมีสิทธิ์ Contributor ขึ้นไป หรือรูปมีขนาดใหญ่เกินไป)','err')};
 const save=()=>{try{localStorage.setItem('s5v4',JSON.stringify(D))}catch(e){}};
 const avg=a=>{a=a.filter(x=>x!=null&&!isNaN(x));return a.length?a.reduce((x,y)=>x+y,0)/a.length:null};
 const zp=(l,z)=>avg(D[l].s[z]);
@@ -81,67 +452,135 @@ const lp=l=>avg(Z.map((_,z)=>zp(l,z)));
 const lvl=p=>p==null?['N','ไม่มีข้อมูล']:p>=90?['A','ดีเยี่ยม']:p>=80?['B','ดี']:p>=70?['C','พอใช้']:['D','ต้องปรับปรุง'];
 const f=p=>p==null?'–':p.toFixed(1)+'%';
 const chip=p=>`<span class="chip ${lvl(p)[0]}">${f(p)}</span>`;
-const lb=p=>{const v=lvl(p);return `<span class="lv ${v[0]}">${v[0]}</span>${v[1]}`};
+const lb=p=>{const v=lvl(p);return `<span class="lvw"><span class="lv ${v[0]}">${v[0]}</span>${v[1]}</span>`};
 const lnL=l=>D[l]?'Line '+pad2(D[l].line):'—';
-const ln=l=>D[l]?'Line '+pad2(D[l].line)+(D[l].shift?' · กะ '+D[l].shift:''):'—';
-const lnI=i=>'Line '+pad2(i.l+1)+(i.sh?' · กะ '+i.sh:'');
+const ln=l=>D[l]?'Line '+pad2(D[l].line)+(D[l].shift?' กะ '+D[l].shift:''):'—';
+const lnI=i=>'Line '+pad2(i.l+1)+(i.sh?' กะ '+i.sh:'');
 const uOf=i=>D.find(u=>u.line==i.l+1&&u.shift==(i.sh||''));
 const inU=(i,u)=>!!u&&i.l+1==u.line&&(i.sh||'')==u.shift;
-const empty=()=>`<div class="card"><b>ยังไม่มีข้อมูลไลน์</b><div class="mu" style="margin-top:6px">Dashboard แสดงเฉพาะไลน์/กะที่มีในแท็บ Scores ของ Google Sheet — เพิ่มแถว (Line, Shift, Zone, Supervisor, TeamLeader) ในชีต แล้วรอซิงก์ประมาณ 30 วินาที หรือตรวจสถานะซิงก์ที่ด้านบนหน้า</div></div>`;
+let BOOT=true,MODE_SHARED=false,LS={k:'l',d:1};const UI={form:false},FD={};
+const IC={
+ ov:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+ dt:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+ rk:'<path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+ iss:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ sh:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+ moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ camera:'<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+ ext:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+ trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ undo:'<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>',
+ copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+ down:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+ up:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>'
+};
+IC.alert=IC.iss;
+const ico=(k,s)=>`<svg class="ic" width="${s||18}" height="${s||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]||''}</svg>`;
+function toast(m,k){const box=document.getElementById('toasts');if(!box)return;const t=document.createElement('div');t.className='toast'+(k=='err'?' err':'');t.textContent=m;box.appendChild(t);setTimeout(()=>t.remove(),k=='err'?7000:4200)}
+function openModal(html){const prev=document.activeElement,d=document.createElement('div');d.className='mdl';d.innerHTML='<div class="mdl-box" role="dialog" aria-modal="true" aria-labelledby="mdt">'+html+'</div>';
+const kd=e=>{if(e.key=='Escape')close()};const close=()=>{d.remove();document.removeEventListener('keydown',kd);if(prev&&prev.focus){try{prev.focus()}catch(e){}}};
+d.addEventListener('mousedown',e=>{if(e.target===d)close()});document.addEventListener('keydown',kd);document.body.appendChild(d);return{el:d,close}}
+function applyTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('s6theme',t)}catch(e){}
+document.querySelectorAll('.js-theme').forEach(b=>{const dk=t=='dark';b.setAttribute('aria-label',dk?'สลับเป็นโหมดสว่าง':'สลับเป็นโหมดมืด');b.innerHTML=ico(dk?'sun':'moon',18)+(b.classList.contains('icon-btn')?'':'<span>'+(dk?'โหมดสว่าง':'โหมดมืด')+'</span>')})}
+function toggleTheme(){applyTheme(document.documentElement.dataset.theme=='dark'?'light':'dark')}
+const syncHTML='<div class="sync-state"><span class="sdot"></span><span class="js-mode">เก็บในเครื่องนี้</span></div><p class="sync-msg js-sy"></p><div class="sync-act"><button class="btn sm js-syb" onclick="toggleSync()">เปิดซิงก์ Google Sheet</button><button class="btn sm js-syf" onclick="permFix()" style="display:none">จัดการสิทธิ์</button></div>';
+function setMode(t){document.querySelectorAll('.js-mode').forEach(e=>e.textContent=t)}
+function toggleSyncPop(){const p=document.getElementById('syncpop'),b=document.getElementById('synctoggle'),o=p.hidden;p.hidden=!o;b.setAttribute('aria-expanded',String(o))}
+const MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const dth=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));if(!m)return s||'—';return (+m[3])+' '+MON[+m[2]-1]+(+m[1]==new Date().getFullYear()?'':' '+m[1])};
+const empty=()=>{const ld=SY.on&&!SY.loaded.sc;const lamps='<div class="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i></div>';
+return ld?`<section class="pn empty load">${lamps}<h2 style="font:600 18px var(--disp)">กำลังโหลดข้อมูลจาก Google Sheet</h2><p>รอสักครู่ คะแนนและ Issue จะแสดงเมื่อโหลดเสร็จ</p></section>`
+:`<section class="pn empty">${lamps}<h2 style="font:600 18px var(--disp)">ยังไม่มีข้อมูลไลน์</h2><p>Dashboard แสดงเฉพาะไลน์และกะที่มีในแท็บ Scores ของ Google Sheet เพิ่มแถว (Line, Shift, Zone, Supervisor, TeamLeader) ในชีต แล้วรอซิงก์ประมาณ 30 วินาที</p><button class="btn p" onclick="go('sh')">ตั้งค่าการเชื่อม Google Sheet</button></section>`};
 let tab='ov',cur=0;
-const tabs={ov:'ภาพรวม',dt:'รายละเอียด / คะแนน',rk:'ประเมิน Sup & TL',iss:'Issue จาก Audit',sh:'Export / Import Sheet'};
-const tabIcons={ov:'▦',dt:'✓',rk:'★',iss:'!',sh:'↕'};
-function nav(){document.getElementById('nav').innerHTML=Object.entries(tabs).map(([k,v])=>`<button class="${k==tab?'on':''}" onclick="tab='${k}';draw()"><span class="nav-ico">${tabIcons[k]||''}</span>${v}</button>`).join('')}
-function legend(){return `<div class="legend"><span><span class="lv A">A</span>≥90% ดีเยี่ยม</span><span><span class="lv B">B</span>80–89.9% ดี</span><span><span class="lv C">C</span>70–79.9% พอใช้</span><span><span class="lv D">D</span>&lt;70% ต้องปรับปรุง</span></div>`}
+const tabs={ov:'ภาพรวม',dt:'รายละเอียดคะแนน',rk:'ประเมิน Sup & TL',iss:'Issue จาก Audit',sh:'นำเข้า / ส่งออก'};
+const tabShort={ov:'ภาพรวม',dt:'คะแนน',rk:'อันดับ',iss:'Issue',sh:'Sheet'};
+const heads={
+ ov:['ภาพรวมคะแนน 6S','คะแนนเฉลี่ยของแต่ละไลน์และพื้นที่ เทียบกับเป้าหมาย '+TARGET+'%'],
+ dt:['รายละเอียดคะแนน','เลือกไลน์เพื่อดูคะแนน 1S–6S แยกตามพื้นที่'],
+ rk:['ประเมิน Supervisor และ Team Leader','เรียงตามคะแนนเฉลี่ยของพื้นที่ที่รับผิดชอบ'],
+ iss:['Issue จากการ Audit','ติดตามการแก้ไขตั้งแต่พบปัญหาจนปิด Issue'],
+ sh:['นำเข้า / ส่งออกข้อมูล','เชื่อม Google Sheet หรือคัดลอกข้อมูลไปวางเอง']};
+const pgh=(k,act)=>`<div class="pg-h"><div><h1>${heads[k][0]}</h1><p>${heads[k][1]}</p></div>${act||''}</div>`;
+function nav(){const od=ISS.filter(late).length;
+const btn=(k,mob)=>`<button class="${k==tab?'on':''}" ${k==tab?'aria-current="page"':''} onclick="go('${k}')">${ico(k,mob?22:19)}<span>${mob?tabShort[k]:tabs[k]}</span>${k=='iss'&&od?`<span class="nb" role="img" aria-label="เกินกำหนด ${od} รายการ">${od}</span>`:''}</button>`;
+document.getElementById('nav').innerHTML=Object.keys(tabs).map(k=>btn(k,0)).join('');
+document.getElementById('tabbar').innerHTML=Object.keys(tabs).map(k=>btn(k,1)).join('')}
+function go(k){tab=k;draw();window.scrollTo(0,0);const m=document.getElementById('m');if(m)m.focus({preventScroll:true})}
+function legend(){return `<div class="legend"><span><span class="lv A">A</span>≥ 90% ดีเยี่ยม</span><span><span class="lv B">B</span>80–89.9% ดี</span><span><span class="lv C">C</span>70–79.9% พอใช้</span><span><span class="lv D">D</span>&lt; 70% ต้องปรับปรุง</span></div>`}
+const kp=(k,v,n,c)=>`<div class="kp ${c||''}"><div class="kp-k">${k}</div><b class="kp-v">${v}</b><div class="kp-n">${n}</div></div>`;
+const strip=(items,c)=>`<div class="strip ${c}">${items.join('')}</div>`;
+const sevCls=s=>s=='สูง'?'hi':s=='ต่ำ'?'lo':'';
+function critList(n,w){const c=criticalIssues(n);return c.length?`<div class="lst">${c.map(i=>`<button class="li" onclick="openIssueId(${i.id})"><span class="ci ${late(i)?'late':sevCls(i.sev)}">${ico('alert',18)}</span><span class="li-m"><b>#${i.id} ${esc(lnI(i))} ${Z[i.z]}</b><small>${esc(shortText(i.desc,w))}</small></span><span class="li-r">${late(i)?'<strong>เกินกำหนด</strong>':esc(i.sev||'')}<small>${dth(i.due)}</small></span></button>`).join('')}</div>`:`<div class="empty-mini">${ico('check',22)}<span>ไม่มี Issue ที่ต้องเร่งติดตาม</span></div>`}
+function board(lp_,all,above,below,mx,mn){
+const boot=BOOT&&D.length>0;if(boot)BOOT=false;
+const g=lvl(all),sc=all==null?0:Math.max(0,Math.min(100,all)),zs=['หัว','กลาง','Cool','ท้าย'];
+const towers=D.map((d,l)=>{const t=lp_[l],gt=lvl(t)[0],w=t==null?0:Math.max(0,Math.min(100,t));
+const lamps=Z.map((z,zi)=>{const q=zp(l,zi),v=lvl(q)[0],tl=d.tl[zi];return `<span class="lamp ${v}" style="--i:${l*4+zi}" title="${esc(ln(l)+' '+z+' '+f(q)+(tl?', TL '+tl:''))}">${q==null?'–':Math.round(q)}</span>`}).join('');
+return `<button class="tw" onclick="cur=${l};go('dt')" aria-label="${esc(ln(l))} คะแนนรวม ${f(t)} ระดับ ${lvl(t)[1]} กดเพื่อดูรายละเอียด"><span class="tw-l">L${pad2(d.line)}${d.shift?`<small>${esc(d.shift)}</small>`:''}</span>${lamps}<span class="tw-t ${gt}"><b>${t==null?'–':t.toFixed(1)}</b><span class="tw-bar"><i style="width:${w}%"></i></span></span></button>`}).join('');
+const zl=`<div class="mx-zones" aria-hidden="true">${Z.map((z,i)=>`<span><span class="zf">${z}</span><span class="zs">${zs[i]}</span></span>`).join('')}<span class="tot">รวม</span></div>`;
+const best=mx<0?'':`<button class="ln-link" onclick="cur=${mx};go('dt')"><span>สูงสุด</span><b>${esc(ln(mx))}  ${lp_[mx].toFixed(1)}%</b></button>`;
+const worst=mn<0||mn==mx?'':`<button class="ln-link" onclick="cur=${mn};go('dt')"><span>ต่ำสุด</span><b>${esc(ln(mn))}  ${lp_[mn].toFixed(1)}%</b></button>`;
+return `<section class="board ${boot?'boot':''}" aria-label="สถานะ 6S ของทุกไลน์"><div class="b-main">
+<div class="b-sum"><div><div class="b-k">คะแนน 6S เฉลี่ยทุกไลน์</div><div class="b-num"><b>${all==null?'–':all.toFixed(1)}</b>${all==null?'':'<span>%</span>'}</div><div class="b-grade"><span class="lvw"><span class="lv ${g[0]}">${g[0]}</span>${g[1]}</span><span class="tg">เป้าหมาย ≥ ${TARGET}%</span></div></div>
+<div class="b-facts"><div class="b-gauge ${g[0]}" role="img" aria-label="คะแนน ${f(all)} เทียบเป้าหมาย ${TARGET}%"><i style="width:${sc}%"></i></div>
+<dl class="b-cnt"><div><dt>ผ่านเป้า</dt><dd>${above}<small> / ${D.length}</small></dd></div><div><dt>ต่ำกว่าเป้า</dt><dd class="${below?'bad':''}">${below}</dd></div></dl>
+<div class="b-ln">${best}${worst}</div></div></div>
+<div class="mx-wrap"><div class="mx">${zl}${towers}</div></div></div>
+<div class="b-foot">${legend()}<span>กดที่ไลน์เพื่อดูรายละเอียด</span></div></section>`}
+const sv=(l,k)=>k=='l'?l:k=='t'?lp(l):zp(l,+k.slice(1));
+function sortBy(k){LS=LS.k==k?{k,d:-LS.d}:{k,d:k=='l'?1:-1};draw()}
+function lineTable(lp_,zavg,all){
+const th=(k,t)=>`<th aria-sort="${LS.k==k?(LS.d>0?'ascending':'descending'):'none'}"><button class="sb" onclick="sortBy('${k}')">${t}</button></th>`;
+const order=D.map((_,l)=>l).sort((a,b)=>{const x=sv(a,LS.k),y=sv(b,LS.k);if(x==null&&y==null)return a-b;if(x==null)return 1;if(y==null)return -1;return (x-y)*LS.d||a-b});
+return `<div class="sc tall"><table><thead><tr>${th('l','ไลน์')}<th>Shift</th><th class="l">Supervisor</th>${Z.map((z,i)=>th('z'+i,z)).join('')}${th('t','รวมไลน์')}<th class="l">ระดับ</th></tr></thead><tbody>
+${order.map(l=>{const d=D[l];return `<tr class="go" tabindex="0" onclick="cur=${l};go('dt')" onkeydown="if(event.key==='Enter')this.click()"><td><b>${lnL(l)}</b></td><td>${esc(d.shift||'—')}</td><td class="l">${esc(d.sup||'—')}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`}).join('')}
+</tbody><tfoot><tr><td colspan="3" class="l">เฉลี่ยทุกไลน์</td>${zavg.map(p=>`<td>${chip(p)}</td>`).join('')}<td>${chip(all)}</td><td></td></tr></tfoot></table></div>`}
 function ov(){
 const lp_=D.map((_,l)=>lp(l)),all=avg(lp_),vl=lp_.map((p,i)=>[p,i]).filter(x=>x[0]!=null),mx=vl.length?vl.reduce((a,b)=>b[0]>a[0]?b:a)[1]:-1,mn=vl.length?vl.reduce((a,b)=>b[0]<a[0]?b:a)[1]:-1;
 const zavg=Z.map((_,z)=>avg(D.map((_,l)=>zp(l,z))));
 const savg=S.map((_,si)=>avg(D.flatMap(d=>Z.map((_,z)=>d.s[z][si]))));
 const below=lp_.filter(p=>p!=null&&p<TARGET).length,above=lp_.filter(p=>p!=null&&p>=TARGET).length;
-const T=ist(),score=all==null?0:Math.max(0,Math.min(100,all));
+const T=ist();
 const openN=ISS.filter(i=>i.st=='open').length,repliedN=ISS.filter(i=>i.st=='replied').length,closedN=ISS.filter(i=>i.st=='closed').length;
-const trend=issueTrend(14),rank=lineRanking(),crit=criticalIssues(5);
-return `<div class="kpis pro">
-<div class="card kpi kpi-success"><div class="kpi-head"><span class="kpi-icon">✓</span><span>Overall 6S Score</span></div><b>${f(all)}</b><div class="kpi-foot">${lb(all)}<span>Target ${TARGET}%</span></div></div>
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">↗</span><span>ผ่านเป้าหมาย</span></div><b>${above}<span style="font-size:14px;color:var(--mu);font-weight:600"> / ${D.length}</span></b><div class="kpi-foot"><span>${D.length?((above/D.length)*100).toFixed(0):0}% ของ Line / Shift</span></div></div>
-<div class="card kpi ${below?'kpi-danger':'kpi-success'}"><div class="kpi-head"><span class="kpi-icon">!</span><span>ต่ำกว่าเป้าหมาย</span></div><b>${below}</b><div class="kpi-foot"><span>${mn<0?'ไม่มีข้อมูล':'ต่ำสุด '+ln(mn)+' · '+f(lp_[mn])}</span></div></div>
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">◎</span><span>Audit Issues</span></div><b>${T.t}</b><div class="kpi-foot"><span>${openN} รอตอบ · ${repliedN} รอยืนยัน</span></div></div>
-<div class="card kpi kpi-success"><div class="kpi-head"><span class="kpi-icon">✓</span><span>Closure Rate</span></div><b>${T.p==null?'–':T.p.toFixed(1)+'%'}</b><div class="kpi-foot"><span>${closedN} Issue ปิดแล้ว</span></div></div>
-<div class="card kpi ${T.od?'kpi-danger':'kpi-success'}"><div class="kpi-head"><span class="kpi-icon">⏱</span><span>Overdue</span></div><b>${T.od}</b><div class="kpi-foot"><span>${T.od?'ต้องติดตามทันที':'ไม่มี Issue เกินกำหนด'}</span></div></div></div>
-<div class="analytics-grid">
-<div class="card panel performance-table-card"><div class="table-title"><div><b>Line Performance Details</b><div class="mu">คลิกที่แถวเพื่อเปิดรายละเอียดคะแนนของไลน์นั้น</div></div><span>Updated from Google Sheet</span></div><div class="sc"><table><thead><tr><th>ไลน์</th><th>Shift</th><th class="l">Supervisor</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th><th class="l">ระดับ Sup</th></tr></thead><tbody>
-${D.map((d,l)=>`<tr class="go" onclick="cur=${l};tab='dt';draw()"><td><b>${lnL(l)}</b></td><td>${d.shift||'—'}</td><td class="l">${d.sup||'—'}</td>${Z.map((_,z)=>`<td>${chip(zp(l,z))}</td>`).join('')}<td>${chip(lp_[l])}</td><td class="l">${lb(lp_[l])}</td></tr>`).join('')}
-</tbody><tfoot><tr><td colspan="3" class="l"><b>เฉลี่ยทุกไลน์</b></td>${zavg.map(p=>`<td>${chip(p)}</td>`).join('')}<td>${chip(all)}</td><td></td></tr></tfoot></table></div></div>
-<div class="card panel score-panel"><div class="panel-head"><div><div class="panel-title">6S Overall Score</div><div class="panel-sub">ภาพรวมคะแนนทุก Line / Shift</div></div>${chip(all)}</div><div class="score-ring" style="--score:${score}"><div><strong>${all==null?'–':all.toFixed(1)+'%'}</strong><small>Overall Achievement</small></div></div><div class="score-mini"><div><b>${mx<0?'–':ln(mx)}</b><span>Best Performance · ${mx<0?'–':f(lp_[mx])}</span></div><div><b>${mn<0?'–':ln(mn)}</b><span>Needs Attention · ${mn<0?'–':f(lp_[mn])}</span></div></div></div>
+const trend=issueTrend(14),rank=lineRanking();
+return board(lp_,all,above,below,mx,mn)
++strip([kp('Issue ทั้งหมด',T.t,`รอตอบ ${openN} / รอยืนยัน ${repliedN}`),kp('Closure rate',T.p==null?'–':T.p.toFixed(1)+'%',`ปิดแล้ว ${closedN} รายการ`),kp('เกินกำหนด',T.od,T.od?'ต้องติดตามทันที':'ไม่มี Issue เกินกำหนด',T.od?'bad hz':''),kp('รอ Audit ยืนยัน',repliedN,'ตอบแล้ว รอผู้ตรวจยืนยันผล')],'s4')
++`<div class="cols c3">
+<section class="pn"><div class="pn-h"><div><h2>Issue ที่ต้องดูก่อน</h2><p>เรียงตามเกินกำหนดและความรุนแรง</p></div><span class="aside">5 อันดับแรก</span></div>${critList(5,66)}</section>
+<section class="pn"><div class="pn-h"><div><h2>ไลน์คะแนนสูงสุด</h2><p>พร้อมสถานะ Issue ของไลน์</p></div><span class="aside">5 อันดับแรก</span></div><div class="lst">${rank.slice(0,5).map((r,i)=>`<button class="li" onclick="cur=${r.l};go('dt')"><span class="rk-n">${i+1}</span><span class="li-m"><b>${esc(ln(r.l))}</b><small>${esc(r.sup||'ไม่ระบุ Supervisor')}, ปิด ${r.t.c}/${r.t.t}${r.t.od?', เกินกำหนด '+r.t.od:''}</small></span>${chip(r.p)}</button>`).join('')||'<div class="empty-mini"><span>ยังไม่มีข้อมูลคะแนน</span></div>'}</div></section>
+<section class="pn"><div class="pn-h"><div><h2>คะแนนแยกตามหมวด 6S</h2><p>ค่าเฉลี่ยของทุกพื้นที่</p></div></div>${S.map((name,i)=>{const p=savg[i],w=p==null?0:Math.max(0,Math.min(100,p));return `<div class="cr"><span>${name}</span><div class="bar"><i class="fill-${lvl(p)[0]}" style="width:${w}%"></i></div><b>${f(p)}</b></div>`}).join('')}</section>
 </div>
-<div class="analytics-grid">
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Audit Issue Trend · 14 Days</div><div class="panel-sub">Issue ที่พบใหม่ เทียบกับ Deadline ที่ครบกำหนดในแต่ละวัน</div></div><span class="target-pill">DAILY TREND</span></div>${trendChart(trend)}<div class="chart-legend"><span class="legend-line">Issue Found</span><span class="legend-line pink">Due / Deadline</span></div></div>
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Issue Status</div><div class="panel-sub">สัดส่วน Workflow ปัจจุบัน</div></div><span class="target-pill">LIVE</span></div>${statusDonut(openN,repliedN,closedN)}</div>
+<div class="cols w">
+<section class="pn"><div class="pn-h"><div><h2>แนวโน้ม Issue 14 วัน</h2><p>Issue ที่พบใหม่ เทียบกับ Deadline ที่ครบกำหนดในแต่ละวัน</p></div></div>${trendChart(trend)}<div class="chart-legend"><span>Issue ที่พบ</span><span class="due">ครบกำหนด</span></div></section>
+<section class="pn"><div class="pn-h"><div><h2>สถานะ Issue</h2><p>สัดส่วนตามขั้นตอนปัจจุบัน</p></div></div>${statusDonut(openN,repliedN,closedN)}</section>
 </div>
-<div class="tri-grid">
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">6S Category Average</div><div class="panel-sub">ค่าเฉลี่ย 1S–6S ทุกพื้นที่</div></div><span class="target-pill">6 CATEGORIES</span></div><div class="category-list">${S.map((name,i)=>{const p=savg[i],w=p==null?0:Math.max(0,Math.min(100,p));return `<div class="cat-row"><div class="cat-name">${name}</div><div class="mini-track"><i style="width:${w}%"></i></div><div class="cat-val">${f(p)}</div></div>`}).join('')}</div></div>
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Area Performance Ranking</div><div class="panel-sub">Top 5 ตามคะแนนรวม พร้อมสถานะ Issue</div></div><span class="target-pill">TOP 5</span></div><div class="rank-list">${rank.slice(0,5).map((r,i)=>`<div class="rank-row"><div class="rank-no">${i+1}</div><div class="rank-main"><b>${ln(r.l)}</b><small>${r.sup||'Supervisor —'} · ${r.t.c}/${r.t.t} Issue ปิด · ${r.t.od} Overdue</small></div><div class="rank-score">${f(r.p)}</div></div>`).join('')||'<div class="mu">ยังไม่มีข้อมูลคะแนน</div>'}</div></div>
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Top Critical Issues</div><div class="panel-sub">เรียง Overdue / Severity เพื่อช่วย Prioritize</div></div><span class="target-pill">ACTION NOW</span></div><div class="critical-list">${crit.length?crit.map(i=>`<div class="critical-item" onclick="openIssueId(${i.id})"><div class="critical-icon">!</div><div class="critical-main"><b>#${i.id} · ${lnI(i)} · ${Z[i.z]}</b><small>${esc(shortText(i.desc,66))}</small></div><div class="critical-due">${late(i)?'<strong>OVERDUE</strong>':'Due'}${i.due||'—'}</div></div>`).join(''):'<div class="empty-state" style="padding:18px"><div class="ico">✓</div>ไม่มี Issue ที่ต้องติดตาม</div>'}</div></div>
-</div>
-${legend()}`}
+<section class="pn"><div class="pn-h"><div><h2>คะแนนรายไลน์</h2><p>กดที่แถวเพื่อดูรายละเอียด และกดหัวคอลัมน์เพื่อเรียงลำดับ</p></div><span class="aside">${D.length} ไลน์ / กะ</span></div>${lineTable(lp_,zavg,all)}</section>`}
 function dt(){
-const d=D[cur],p=lp(cur);
-const it=ist(cur);
-return `<div style="display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-bottom:14px">
-<select style="align-self:center" onchange="cur=+this.value;draw()">${D.map((_,l)=>`<option value="${l}" ${l==cur?'selected':''}>${ln(l)}</option>`).join('')}</select>
-<div class="card" style="flex:1;min-width:280px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="mu">Supervisor · ${ln(cur)}</div><b>${d.sup||'—'}</b><div>${lb(p)}</div></div><div style="text-align:right"><div class="big">${f(p)}</div><div class="mu">Issue ${it.c}/${it.t} closed · ${it.od} overdue</div></div></div></div>
-<div class="grid">${Z.map((z,zi)=>{const q=zp(cur,zi),v=lvl(q)[0];return `<div class="card"><div class="zh"><div><b>${z}</b><div class="mu">Team Leader: ${d.tl[zi]||'—'}</div><div class="mu">Issue ปิดแล้ว ${ist(cur,zi).c}/${ist(cur,zi).t}</div><div>${lb(q)}</div></div><div class="big">${f(q)}</div></div>
-${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="row"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x||0}%"></i></div><input type="number" min="0" max="100" value="${x==null?'':x}" disabled title="แก้คะแนนที่ Google Sheet แท็บ Scores"></div>`}).join('')}</div>`}).join('')}</div>
-${legend()}<div class="mu">คะแนน 6S (1S–6S) และชื่อ Sup/TL ดึงจาก Google Sheet แท็บ Scores ซึ่งคำนวณจาก Issue อัตโนมัติ (ระบบอัปเดตทุก 30 วินาที) · % พื้นที่ → TL → Sup คำนวณอัตโนมัติ · Issue ที่บันทึกใน Dashboard จะส่งไปแท็บ Issues</div>`}
+const d=D[cur],p=lp(cur),it=ist(cur);
+const picks=D.map((x,l)=>{const q=lp(l),v=lvl(q)[0];return `<button class="pick ${v} ${l==cur?'on':''}" onclick="cur=${l};draw()" aria-pressed="${l==cur}" aria-label="${esc(ln(l))}"><b>${pad2(x.line)}</b><small>${esc(x.shift||'')}</small><span>${q==null?'–':q.toFixed(0)}</span></button>`}).join('');
+return `<div class="picks" role="group" aria-label="เลือกไลน์">${picks}</div>
+<section class="pn sum"><div><h2>${esc(ln(cur))}</h2><div class="who">Supervisor: <b>${esc(d.sup||'—')}</b></div><div style="margin-top:6px">${lb(p)}</div></div><div><div class="big">${f(p)}</div><div class="mu" style="text-align:right">Issue ปิดแล้ว ${it.c}/${it.t}, เกินกำหนด ${it.od}</div></div></section>
+<div class="zg">${Z.map((z,zi)=>{const q=zp(cur,zi),iz=ist(cur,zi);return `<section class="pn"><div class="zh"><div><h3>${z}</h3><div class="mu">Team Leader: ${esc(d.tl[zi]||'—')}</div></div><div style="text-align:right"><div class="big">${f(q)}</div><div style="margin-top:4px">${lb(q)}</div></div></div>
+${S.map((s,si)=>{const x=d.s[zi][si];return `<div class="sr"><span>${s}</span><div class="bar"><i class="fill-${lvl(x)[0]}" style="width:${x||0}%"></i></div><b>${x==null?'–':x}</b></div>`}).join('')}
+<div class="zf2">Issue ปิดแล้ว ${iz.c}/${iz.t}${iz.od?', เกินกำหนด '+iz.od:''}</div></section>`}).join('')}</div>
+${legend()}<p class="mu" style="margin-top:12px;max-width:80ch">คะแนน 1S–6S และชื่อ Supervisor / Team Leader ดึงจากแท็บ Scores ใน Google Sheet ซึ่งคำนวณจาก Issue อัตโนมัติ (ระบบอัปเดตทุก 30 วินาที) ส่วนคะแนนของ Team Leader และ Supervisor คำนวณจากคะแนนพื้นที่ Issue ที่บันทึกใน Dashboard จะถูกส่งไปที่แท็บ Issues</p>`}
 function setv(z,s,v){D[cur].s[z][s]=(v===''||v==null)?null:Math.max(0,Math.min(100,+v||0));save(cur);draw()}
 function rk(){
 const tl=[];D.forEach((d,l)=>Z.forEach((z,zi)=>tl.push({l,z,zi,n:d.tl[zi]||'—',p:zp(l,zi)})));
 tl.sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
 const sp=D.map((d,l)=>({l,n:d.sup||'—',p:lp(l)})).sort((a,b)=>(b.p==null?-1:b.p)-(a.p==null?-1:a.p));
-return `<div class="two"><div><h2>ประเมิน Supervisor (เฉลี่ยทั้ง 4 พื้นที่)</h2><div class="card sc"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
-${sp.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td><td>${chip(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></div>
-<div><h2>ประเมิน Team Leader (${D.length*Z.length} คน)</h2><div class="card sc" style="max-height:640px;overflow:auto"><table><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>พื้นที่</th><th>%</th><th class="l">ระดับ</th></tr></thead><tbody>
-${tl.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td>${ln(r.l)}</td><td>${r.z}</td><td>${chip(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></div></div>${legend()}`}
+const pc=p=>`${chip(p)}<span class="mbar mb"><i class="fill-${lvl(p)[0]}" style="width:${p==null?0:Math.max(0,Math.min(100,p))}%"></i></span>`;
+return `<div class="cols n">
+<section class="pn"><div class="pn-h"><div><h2>Supervisor</h2><p>เฉลี่ยทั้ง 4 พื้นที่ของไลน์</p></div><span class="aside">${sp.length} คน</span></div><div class="sc"><table class="rk-tbl"><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>คะแนน</th><th class="l">ระดับ</th></tr></thead><tbody>
+${sp.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${esc(r.n)}</td><td>${esc(ln(r.l))}</td><td>${pc(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></section>
+<section class="pn"><div class="pn-h"><div><h2>Team Leader</h2><p>คะแนนของพื้นที่ที่รับผิดชอบ</p></div><span class="aside">${D.length*Z.length} คน</span></div><div class="sc tall"><table class="rk-tbl"><thead><tr><th>#</th><th class="l">ชื่อ</th><th>ไลน์</th><th>พื้นที่</th><th>คะแนน</th><th class="l">ระดับ</th></tr></thead><tbody>
+${tl.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${esc(r.n)}</td><td>${esc(ln(r.l))}</td><td>${r.z}</td><td>${pc(r.p)}</td><td class="l">${lb(r.p)}</td></tr>`).join('')}</tbody></table></div></section></div>${legend()}`}
 
 const todayS=()=>new Date().toISOString().slice(0,10),addD=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -163,10 +602,10 @@ const a=await dargs(m,'create_file',{title:'5S-'+Date.now()+'-'+k+'.jpg',base64C
 const o=objOf(await m.callTool(DRV,'create_file',a));if(!o.id)throw new Error('Drive ไม่ส่งรหัสไฟล์กลับมา');DC[o.id]=du;return o.id}
 async function viewPh(id,btn){if(DC[id]){zoom(DC[id]);return}const t=btn?btn.textContent:'';if(btn)btn.textContent='กำลังโหลด...';
 try{const m=await getMc();if(!m)throw new Error('ไม่มีตัวเชื่อม Drive');const a=await dargs(m,'download_file_content',{fileId:id});const o=objOf(await m.callTool(DRV,'download_file_content',a));
-if(!o.content)throw new Error('ไม่พบข้อมูลรูป');DC[id]='data:'+(o.mimeType||'image/jpeg')+';base64,'+o.content;zoom(DC[id])}catch(e){alert('เปิดรูปในหน้านี้ไม่ได้ ('+((e&&(e.code||e.message))||'?')+') ใช้ลิงก์ "เปิดใน Drive" แทน')}
+if(!o.content)throw new Error('ไม่พบข้อมูลรูป');DC[id]='data:'+(o.mimeType||'image/jpeg')+';base64,'+o.content;zoom(DC[id])}catch(e){toast('เปิดรูปในหน้านี้ไม่ได้ ('+((e&&(e.code||e.message))||'?')+') ใช้ลิงก์ "เปิดใน Drive" แทน','err')}
 if(btn)btn.textContent=t}
-const photoHTML=(v,lb)=>!v?'':String(v).startsWith('d:')?`<div class="mu" style="margin-top:6px">📷 ${lb} <button class="btn" style="padding:2px 10px;font-size:12px" onclick="viewPh('${v.slice(2)}',this)">ดูรูป</button> <a href="${dlink(v)}" target="_blank" rel="noopener">เปิดใน Drive ↗</a></div>`:`<img class="ph" src="${imgSrc(v)}" alt="${lb}" onclick="zoom(this.src)">`;
-const phHTML=k=>{const s=imgSrc(PH[k]);return s?`<img src="${s}" style="max-width:160px;max-height:120px;border-radius:8px;margin-top:6px">`:PH[k]?'<div class="mu">✓ แนบรูปแล้ว</div>':''};
+const photoHTML=(v,lb)=>!v?'':String(v).startsWith('d:')?`<div class="ph-d">${ico('camera',16)}<span>${lb}</span><button class="btn sm" onclick="viewPh('${v.slice(2)}',this)">ดูรูป</button><a href="${dlink(v)}" target="_blank" rel="noopener">เปิดใน Drive</a></div>`:`<figure class="phf"><img class="pimg" src="${imgSrc(v)}" alt="${lb}" onclick="zoom(this.src)"><figcaption>${lb}</figcaption></figure>`;
+const phHTML=k=>{const s=imgSrc(PH[k]);return s?`<img class="pvw" src="${s}" alt="รูปที่แนบ">`:PH[k]?`<div class="pvn">${ico('check',15)}แนบรูปแล้ว</div>`:''};
 function phUI(k){const v=PH[k],pv=document.getElementById('pv-'+k),bt=document.getElementById('bt-'+k),hn=document.getElementById('hn-'+k);
 if(pv)pv.innerHTML=phHTML(k);if(bt)bt.disabled=!v;if(hn)hn.style.display=v?'none':'inline'}
 function shrink(f,max,qual){return new Promise((ok,no)=>{const u=URL.createObjectURL(f),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?ok(b):no(new Error('แปลงรูปไม่สำเร็จ')),'image/jpeg',qual)};im.onerror=()=>no(new Error('ไฟล์ไม่ใช่รูปภาพ'));im.src=u})}
@@ -179,10 +618,10 @@ try{const id=await driveUp(await shrink(f,1280,.75),k);v='d:'+id}catch(e){why='D
 if(!v){let as=null;try{as=window.claude?await claude.use('assets'):null}catch(e){}
 if(as){try{v=(await as.upload(await shrink(f,1280,.75))).id}catch(e){why+=' / assets: '+((e&&(e.code||e.message))||'?')}}}
 if(!v){let b;for(const [m,q] of [[900,.6],[700,.55],[560,.5],[420,.45]]){b=await shrink(f,m,q);if(b.size<=90000)break}v=await b2d(b)}
-PH[k]=v;if(v.startsWith('d:'))why=''}catch(e){alert('แนบรูปไม่สำเร็จ: '+(e.message||'ไฟล์ไม่ถูกต้อง'))}
+PH[k]=v;if(v.startsWith('d:'))why=''}catch(e){toast('แนบรูปไม่สำเร็จ: '+(e.message||'ไฟล์ไม่ถูกต้อง'),'err')}
 if(hn)hn.textContent='ต้องแนบรูปก่อนจึงจะ'+(k=='add'?'บันทึก':'ส่งคำตอบ')+'ได้';phUI(k);
-const pv=document.getElementById('pv-'+k);if(pv&&PH[k]){pv.insertAdjacentHTML('beforeend','<div class="mu">'+(why?'⚠ เก็บใน Dashboard แทน Drive ('+esc(why)+')':'☁ บันทึกลง Google Drive แล้ว')+'</div>')}}
-function zoom(src){const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;z-index:99;cursor:zoom-out';const im=document.createElement('img');im.src=src;im.style.cssText='max-width:95%;max-height:95%';d.appendChild(im);d.onclick=()=>d.remove();document.body.appendChild(d)}
+const pv=document.getElementById('pv-'+k);if(pv&&PH[k]){pv.insertAdjacentHTML('beforeend','<div class="pvn">'+(why?ico('alert',15)+'เก็บใน Dashboard แทน Drive ('+esc(why)+')':ico('check',15)+'บันทึกลง Google Drive แล้ว')+'</div>')}}
+function zoom(src){const d=document.createElement('div');d.className='lbx';d.setAttribute('role','dialog');d.setAttribute('aria-label','ดูรูปขยาย');const im=document.createElement('img');im.src=src;im.alt='รูปขยาย';const b=document.createElement('button');b.className='btn';b.innerHTML=ico('x',16)+'ปิด';const kd=e=>{if(e.key=='Escape')cl()};const cl=()=>{d.remove();document.removeEventListener('keydown',kd)};d.onclick=cl;document.addEventListener('keydown',kd);d.append(im,b);document.body.appendChild(d);b.focus()}
 
 const late=i=>i.st!='closed'&&i.due<todayS();
 function ist(l,z){const u=l==null?null:D[l];const a=ISS.filter(i=>(l==null||inU(i,u))&&(z==null||i.z==z));const c=a.filter(i=>i.st=='closed').length;
@@ -195,66 +634,87 @@ function lineRanking(){return D.map((d,l)=>({l,p:lp(l),sup:d.sup,t:ist(l)})).fil
 function criticalIssues(n=5){return ISS.filter(i=>i.st!='closed').slice().sort((a,b)=>(late(b)?1:0)-(late(a)?1:0)||sevW(b.sev)-sevW(a.sev)||String(a.due||'9999').localeCompare(String(b.due||'9999'))).slice(0,n)}
 function openIssueId(id){tab='iss';FOCUS_ID=id;FL={l:'all',st:'all',sev:'all',cat:'all',q:''};draw();setTimeout(()=>{const e=document.getElementById('issue-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 function issueTrend(days=14){const dates=[],found=[],due=[];const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(days-1));for(let k=0;k<days;k++){const x=new Date(d);x.setDate(d.getDate()+k);const key=x.toISOString().slice(0,10);dates.push(key);found.push(ISS.filter(i=>i.date==key).length);due.push(ISS.filter(i=>i.due==key&&i.st!='closed').length)}return{dates,found,due}}
-function trendChart(T){const W=720,H=245,L=36,R=12,Tp=18,B=36,iw=W-L-R,ih=H-Tp-B,max=Math.max(1,...T.found,...T.due),x=i=>L+(T.dates.length<2?0:i*iw/(T.dates.length-1)),y=v=>Tp+ih-(v/max)*ih,pts=a=>a.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join(' '),area=`${L},${Tp+ih} ${pts(T.found)} ${x(T.dates.length-1)},${Tp+ih}`;let g='';for(let j=0;j<=4;j++){const yy=Tp+ih*j/4,val=Math.round(max*(1-j/4));g+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" class="chart-grid"/><text x="4" y="${yy+3}" class="chart-label">${val}</text>`}const labs=T.dates.map((d,i)=>i%3==0||i==T.dates.length-1?`<text x="${x(i)}" y="${H-10}" text-anchor="middle" class="chart-label">${d.slice(5)}</text>`:'').join('');const dots=T.found.map((v,i)=>v?`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="chart-dot-a"><title>${T.dates[i]} · Found ${v}</title></circle>`:'').join('')+T.due.map((v,i)=>v?`<circle cx="${x(i)}" cy="${y(v)}" r="3" class="chart-dot-b"><title>${T.dates[i]} · Due ${v}</title></circle>`:'').join('');return `<div class="chart-wrap"><svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><defs><linearGradient id="areaBlue" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#5d72e9" stop-opacity=".55"/><stop offset="100%" stop-color="#5d72e9" stop-opacity="0"/></linearGradient></defs>${g}<polygon points="${area}" class="chart-area-a"/><polyline points="${pts(T.found)}" class="chart-line-a"/><polyline points="${pts(T.due)}" class="chart-line-b"/>${dots}${labs}</svg></div>`}
-function statusDonut(o,r,c){const total=o+r+c,a=total?o/total*100:0,b=total?r/total*100:0;return `<div class="donut-layout"><div class="donut" style="--a:${a};--b:${b}"><div class="donut-center"><b>${total}</b><span>Total Issues</span></div></div><div class="donut-legend"><div class="donut-item"><span class="left"><span class="dot open"></span>รอตอบ</span><b>${o}</b></div><div class="donut-item"><span class="left"><span class="dot replied"></span>รอ Audit ยืนยัน</span><b>${r}</b></div><div class="donut-item"><span class="left"><span class="dot closed"></span>ปิดแล้ว</span><b>${c}</b></div><div class="mu" style="margin-top:4px">Closure ${total?(c/total*100).toFixed(1):0}%</div></div></div>`}
+const dmo=d=>(+d.slice(8,10))+'/'+(+d.slice(5,7));
+function trendChart(T){
+if(T.found.every(v=>!v)&&T.due.every(v=>!v))return `<div class="empty-mini">${ico('check',22)}<span>ไม่มี Issue ที่พบหรือครบกำหนดใน 14 วันที่ผ่านมา</span></div>`;
+const nw=window.innerWidth<700,W=nw?420:760,H=nw?220:250,L=30,R=10,Tp=14,B=30,iw=W-L-R,ih=H-Tp-B,n=T.dates.length;
+const m0=Math.max(1,...T.found,...T.due),max=Math.max(4,Math.ceil(m0/4)*4);
+const x=i=>L+(n<2?0:i*iw/(n-1)),y=v=>Tp+ih-(v/max)*ih,pts=a=>a.map((v,i)=>x(i).toFixed(1)+','+y(v).toFixed(1)).join(' '),area=`${L},${Tp+ih} ${pts(T.found)} ${x(n-1).toFixed(1)},${Tp+ih}`;
+let g='';for(let j=0;j<=4;j++){const yy=Tp+ih*j/4;g+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" class="cg"/><text x="${L-6}" y="${yy+4}" text-anchor="end" class="cl">${max*(1-j/4)}</text>`}
+const step=nw?4:3,labs=T.dates.map((d,i)=>(n-1-i)%step==0?`<text x="${x(i)}" y="${H-8}" text-anchor="middle" class="cl">${dmo(d)}</text>`:'').join('');
+const dots=T.found.map((v,i)=>v?`<circle cx="${x(i)}" cy="${y(v)}" r="4" class="c-da"><title>${dmo(T.dates[i])} พบ ${v}</title></circle>`:'').join('')+T.due.map((v,i)=>v?`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="c-db"><title>${dmo(T.dates[i])} ครบกำหนด ${v}</title></circle>`:'').join('');
+return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="กราฟ Issue ที่พบและที่ครบกำหนด ย้อนหลัง 14 วัน">${g}<polygon points="${area}" class="c-area"/><polyline points="${pts(T.found)}" class="c-a"/><polyline points="${pts(T.due)}" class="c-b"/>${dots}${labs}</svg>`}
+function statusDonut(o,r,c){const total=o+r+c,a=total?o/total*100:0,b=total?r/total*100:0;return `<div class="donut-layout"><div class="donut ${total?'':'z'}" style="--a:${a};--b:${b}" role="img" aria-label="Issue ทั้งหมด ${total} รายการ"><div class="donut-center"><b>${total}</b><span>Issue</span></div></div><div class="donut-legend"><div class="donut-item"><span class="left"><span class="dot open"></span>รอตอบ</span><b>${o}</b></div><div class="donut-item"><span class="left"><span class="dot replied"></span>รอ Audit ยืนยัน</span><b>${r}</b></div><div class="donut-item"><span class="left"><span class="dot closed"></span>ปิดแล้ว</span><b>${c}</b></div><div class="mu">Closure ${total?(c/total*100).toFixed(1):0}%</div></div></div>`}
 
+function issFiltered(){const q=String(FL.q||'').trim().toLowerCase();
+return ISS.filter(i=>(FL.l=='all'||inU(i,D[+FL.l]))&&(FL.st=='all'||i.st==FL.st)&&(FL.sev=='all'||i.sev==FL.sev)&&(FL.cat=='all'||String(i.s)==String(FL.cat))&&(!q||('#'+i.id+' '+lnI(i)+' '+Z[i.z]+' '+S[i.s]+' '+i.desc+' '+(i.auditor||'')+' '+((uOf(i)||{}).sup||'')+' '+((uOf(i)||{tl:[]}).tl[i.z]||'')).toLowerCase().includes(q))).sort((a,b)=>(late(b)?1:0)-(late(a)?1:0)||sevW(b.sev)-sevW(a.sev)||b.id-a.id)}
+function issueCard(i){const u=uOf(i)||{},tl=(u.tl||[])[i.z]||'—',lt=late(i);
+const a=i.st=='open'?['done','now','']:i.st=='replied'?['done','done','now']:['done','done','done'];
+const stp=`<div class="stp" role="img" aria-label="ขั้นตอนปัจจุบัน: ${stT[i.st]}"><span class="${a[0]}">พบปัญหา</span><i class="${a[1]=='done'?'done':''}"></i><span class="${a[1]}">TL แก้ไขและตอบ</span><i class="${a[2]=='done'?'done':''}"></i><span class="${a[2]}">Audit ยืนยันปิด</span></div>`;
+const before=photoHTML(i.img,'ก่อนแก้ไข'),after=i.st=='open'?'':photoHTML(i.rimg,'หลังแก้ไข'),ph=before||after?`<div class="phs">${before}${after}</div>`:'';
+const k='r'+i.id;
+const act=i.st=='open'?`<div class="fld" style="margin-top:14px"><label for="${k}">คำตอบจาก Team Leader</label><textarea class="in" id="${k}" rows="3" placeholder="สาเหตุ การแก้ไข และวิธีป้องกันไม่ให้เกิดซ้ำ" oninput="FD[this.id]=this.value">${esc(FD[k]||'')}</textarea></div>
+<div class="ib"><label class="fbtn">${ico('camera',18)}<span>แนบรูปหลังแก้ไข</span><input type="file" accept="image/*" onchange="pickPh('${k}',this)"></label><button class="btn p" id="bt-${k}" onclick="rep(${i.id})" ${PH[k]?'':'disabled'}>ส่งคำตอบเพื่อรอ Audit</button></div><div id="pv-${k}">${phHTML(k)}</div><div class="hint" id="hn-${k}" style="${PH[k]?'display:none':''}">ต้องแนบรูปก่อนจึงจะส่งคำตอบได้</div>`
+:`<div class="reply"><span class="mu">การแก้ไข${i.by?' โดย '+esc(i.by):''}</span>${esc(i.reply||'')}</div><div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">${ico('check',16)}ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">${ico('undo',16)}ตีกลับให้แก้ไข</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิด Issue ใหม่</button>`}</div>`;
+return `<article id="issue-${i.id}" class="pn iss ${i.st} ${lt?'late':''} ${FOCUS_ID==i.id?'focused':''}" style="scroll-margin-top:84px">
+<div class="issue-head"><div class="issue-title"><b>#${i.id} ${esc(lnI(i))} ${Z[i.z]}</b><div class="mu">${S[i.s]}</div></div><div class="issue-tags"><span class="badge st-${i.st}">${stT[i.st]}</span><span class="badge ${i.sev=='สูง'?'D':i.sev=='กลาง'?'C':'B'}">ความรุนแรง ${esc(i.sev||'')}</span>${lt?`<span class="badge late">${ico('clock',13)}เกินกำหนด</span>`:''}</div></div>
+${stp}<p class="issue-desc">${esc(i.desc)}</p>${ph}
+<div class="meta"><div><span>ผู้ตรวจ</span><b>${esc(i.auditor||'-')}</b></div><div><span>วันที่พบ</span><b>${dth(i.date)}</b></div><div><span>Deadline</span><b class="${lt?'lateb':''}">${dth(i.due)}</b></div><div><span>ผู้รับผิดชอบ</span><b title="TL ${esc(tl)} / Sup ${esc(u.sup||'—')}">TL ${esc(tl)} / Sup ${esc(u.sup||'—')}</b></div></div>
+${act}<div class="ib"><button class="btn sm dn" onclick="delIss(${i.id})">${ico('trash',15)}ลบ Issue นี้</button></div></article>`}
+function issListHTML(list){return list.length?list.map(issueCard).join(''):`<div class="pn empty"><div class="lamps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><b>ไม่พบ Issue ตามตัวกรอง</b><p>ลองเปลี่ยนไลน์ สถานะ ความรุนแรง หรือคำค้นหา</p></div>`}
+function refList(){const list=issFiltered(),a=document.getElementById('issl'),n=document.getElementById('issn');if(a)a.innerHTML=issListHTML(list);if(n)n.textContent=list.length+' / '+ISS.length+' รายการ'}
+function toggleForm(){UI.form=!UI.form;draw();if(UI.form)setTimeout(()=>{const e=document.getElementById('newissue');if(e){e.scrollIntoView({behavior:'smooth',block:'start'});const s=document.getElementById('fl');if(s)s.focus({preventScroll:true})}},40)}
 function iss(){
 const T=ist(),rp=T.t?T.r/T.t*100:null;
-const openN=ISS.filter(i=>i.st=='open').length,repliedN=ISS.filter(i=>i.st=='replied').length,closedN=ISS.filter(i=>i.st=='closed').length;
-const q=String(FL.q||'').trim().toLowerCase();
-const list=ISS.filter(i=>(FL.l=='all'||inU(i,D[+FL.l]))&&(FL.st=='all'||i.st==FL.st)&&(FL.sev=='all'||i.sev==FL.sev)&&(FL.cat=='all'||String(i.s)==String(FL.cat))&&(!q||('#'+i.id+' '+lnI(i)+' '+Z[i.z]+' '+S[i.s]+' '+i.desc+' '+(i.auditor||'')+' '+((uOf(i)||{}).sup||'')+' '+((uOf(i)||{tl:[]}).tl[i.z]||'')).toLowerCase().includes(q))).sort((a,b)=>(late(b)?1:0)-(late(a)?1:0)||sevW(b.sev)-sevW(a.sev)||b.id-a.id);
-const opt=(a,sel)=>a.map(([v,t])=>`<option value="${v}" ${String(v)==String(sel)?'selected':''}>${t}</option>`).join('');
-const lo=D.map((_,l)=>[l,ln(l)]),crit=criticalIssues(5);
-return `<div class="kpis pro">
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">◎</span><span>Issue ทั้งหมด</span></div><b>${T.t}</b><div class="kpi-foot"><span>${openN} รอตอบ · ${repliedN} รอยืนยัน</span></div></div>
-<div class="card kpi kpi-success"><div class="kpi-head"><span class="kpi-icon">✓</span><span>Closure Rate</span></div><b>${T.p==null?'–':f(T.p)}</b><div class="kpi-foot"><span>${T.c} Issue ปิดแล้ว</span></div></div>
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">↗</span><span>Response Rate</span></div><b>${rp==null?'–':f(rp)}</b><div class="kpi-foot"><span>ตอบแล้ว + ปิดแล้ว</span></div></div>
-<div class="card kpi kpi-danger"><div class="kpi-head"><span class="kpi-icon">⏱</span><span>Overdue</span></div><b>${T.od}</b><div class="kpi-foot"><span>${T.od?'ต้องติดตามทันที':'ไม่มีงานเกินกำหนด'}</span></div></div>
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">!</span><span>High Severity</span></div><b>${ISS.filter(i=>i.st!='closed'&&i.sev=='สูง').length}</b><div class="kpi-foot"><span>Issue เปิดอยู่ระดับสูง</span></div></div>
-<div class="card kpi"><div class="kpi-head"><span class="kpi-icon">⌛</span><span>Waiting Audit</span></div><b>${repliedN}</b><div class="kpi-foot"><span>รอยืนยันผลหลังแก้ไข</span></div></div></div>
-<div class="issue-analytics">
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Issue Workflow</div><div class="panel-sub">สถานะปัจจุบันของ Corrective Action</div></div><span class="target-pill">LIVE</span></div><div class="workflow"><div class="workflow-step open"><b>${openN}</b><span>1 · รอตอบ / แก้ไข</span></div><div class="workflow-step replied"><b>${repliedN}</b><span>2 · รอ Audit ยืนยัน</span></div><div class="workflow-step closed"><b>${closedN}</b><span>3 · Closed</span></div></div><div style="margin-top:16px">${statusDonut(openN,repliedN,closedN)}</div></div>
-<div class="card panel"><div class="panel-head"><div><div class="panel-title">Critical Action Queue</div><div class="panel-sub">Overdue และ Severity สูงถูกจัดลำดับก่อน</div></div><span class="target-pill">TOP 5</span></div><div class="critical-list">${crit.length?crit.map(i=>`<div class="critical-item" onclick="openIssueId(${i.id})"><div class="critical-icon">!</div><div class="critical-main"><b>#${i.id} · ${lnI(i)} · ${Z[i.z]}</b><small>${esc(shortText(i.desc,78))}</small></div><div class="critical-due">${late(i)?'<strong>OVERDUE</strong>':esc(i.sev||'')} ${i.due||'—'}</div></div>`).join(''):'<div class="empty-state"><div class="ico">✓</div>ไม่มี Issue ที่ต้องเร่งติดตาม</div>'}</div></div>
+const openN=ISS.filter(i=>i.st=='open').length,repliedN=ISS.filter(i=>i.st=='replied').length,closedN=ISS.filter(i=>i.st=='closed').length,tot=openN+repliedN+closedN;
+const list=issFiltered();
+const opt=(a,sel)=>a.map(([v,t])=>`<option value="${v}" ${String(v)==String(sel)?'selected':''}>${esc(t)}</option>`).join('');
+const lo=D.map((_,l)=>[l,ln(l)]),hi=ISS.filter(i=>i.st!='closed'&&i.sev=='สูง').length;
+const dv=(k,def)=>FD[k]!==undefined?FD[k]:def,FH='oninput="FD[this.id]=this.value" onchange="FD[this.id]=this.value"';
+const seg=(n,c)=>tot?`<i style="width:${n/tot*100}%;background:var(--${c})"></i>`:'';
+const form=UI.form?`<section class="pn" id="newissue" style="margin-bottom:14px;scroll-margin-top:84px"><div class="pn-h"><div><h2>สร้าง Issue ใหม่</h2><p>ระบุพื้นที่ หมวด 6S ผู้ตรวจ และ Deadline ให้ครบก่อนบันทึก</p></div><button class="icon-btn" onclick="toggleForm()" aria-label="ปิดฟอร์ม">${ico('x',18)}</button></div>
+<div class="fm"><div class="fld"><label for="fl">ไลน์</label><select class="in" id="fl" ${FH}>${opt(lo,dv('fl',0))}</select></div>
+<div class="fld"><label for="fz">พื้นที่</label><select class="in" id="fz" ${FH}>${opt(Z.map((z,i)=>[i,z]),dv('fz',0))}</select></div>
+<div class="fld"><label for="fs">หมวด 6S</label><select class="in" id="fs" ${FH}>${opt(S.map((z,i)=>[i,z]),dv('fs',0))}</select></div>
+<div class="fld"><label for="fv">ความรุนแรง</label><select class="in" id="fv" ${FH}>${opt(['สูง','กลาง','ต่ำ'].map(x=>[x,x]),dv('fv','กลาง'))}</select></div>
+<div class="fld"><label for="fa">ผู้ตรวจ</label><input class="in" id="fa" placeholder="ชื่อผู้ Audit" value="${esc(dv('fa',''))}" ${FH}></div>
+<div class="fld"><label for="fd">กำหนดตอบ / แก้ไข</label><input class="in" id="fd" type="date" value="${esc(dv('fd',addD(7)))}" ${FH}></div></div>
+<div class="fld" style="margin-top:12px"><label for="ft">รายละเอียดปัญหาที่พบ</label><textarea class="in" id="ft" rows="3" placeholder="อธิบายสภาพปัญหา จุดที่พบ และสิ่งที่ต้องการให้แก้ไข" oninput="FD[this.id]=this.value">${esc(dv('ft',''))}</textarea></div>
+<div class="ib"><label class="fbtn">${ico('camera',18)}<span>แนบรูปปัญหาที่พบ</span><input type="file" accept="image/*" onchange="pickPh('add',this)"></label><button class="btn p" id="bt-add" onclick="addIss()" ${PH.add?'':'disabled'}>บันทึก Issue</button><button class="btn" onclick="toggleForm()">ยกเลิก</button></div>
+<div id="pv-add">${phHTML('add')}</div><div class="hint" id="hn-add" style="${PH.add?'display:none':''}">ต้องแนบรูปก่อนจึงจะบันทึกได้</div></section>`:'';
+return `${strip([kp('Issue ทั้งหมด',T.t,`รอตอบ ${openN} / รอยืนยัน ${repliedN}`),kp('Closure rate',T.p==null?'–':f(T.p),`ปิดแล้ว ${T.c} รายการ`),kp('Response rate',rp==null?'–':f(rp),'ตอบแล้วและปิดแล้ว'),kp('เกินกำหนด',T.od,T.od?'ต้องติดตามทันที':'ไม่มีงานเกินกำหนด',T.od?'bad hz':''),kp('ความรุนแรงสูง',hi,'Issue ที่ยังเปิดอยู่'),kp('รอ Audit ยืนยัน',repliedN,'รอยืนยันผลหลังแก้ไข')],'s6')}
+<div class="cols n">
+<section class="pn"><div class="pn-h"><div><h2>สถานะการแก้ไข</h2><p>Issue อยู่ในขั้นตอนไหนบ้าง</p></div></div><div class="pipe" role="img" aria-label="รอตอบ ${openN} รอยืนยัน ${repliedN} ปิดแล้ว ${closedN}">${seg(openN,'Df')}${seg(repliedN,'Cf')}${seg(closedN,'Af')}</div><div class="pipe-k"><div class="open"><b>${openN}</b><span>รอตอบ / แก้ไข</span></div><div class="replied"><b>${repliedN}</b><span>รอ Audit ยืนยัน</span></div><div class="closed"><b>${closedN}</b><span>ปิดแล้ว</span></div></div></section>
+<section class="pn"><div class="pn-h"><div><h2>Issue ที่ต้องดูก่อน</h2><p>เกินกำหนดและความรุนแรงสูงอยู่ก่อน</p></div><span class="aside">5 อันดับแรก</span></div>${critList(5,78)}</section>
 </div>
-<div class="card section-card sc"><div class="table-title"><div><b>Closure Rate by Area</b><div class="mu">ดูจำนวนปิด / ทั้งหมด และ Overdue แยกตาม Zone</div></div><span>${D.length} Line / Shift</span></div><table><thead><tr><th>ไลน์</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th></tr></thead><tbody>
-${D.map((_,l)=>`<tr><td><b>${ln(l)}</b></td>${Z.map((_,z)=>{const x=ist(l,z);return `<td>${x.t?x.c+'/'+x.t+' ':''}${ichip(x.p)}${x.od?` <span class="badge st-open">เกิน ${x.od}</span>`:''}</td>`}).join('')}<td>${(()=>{const x=ist(l);return (x.t?x.c+'/'+x.t+' ':'')+ichip(x.p)})()}</td></tr>`).join('')}</tbody></table></div>
-<h2>บันทึก Issue จากการ Audit</h2><div class="card audit-form"><div class="audit-title"><span class="ico">＋</span><div><b>Create New 6S Issue</b><div class="mu">ระบุพื้นที่ หมวด 6S ผู้รับผิดชอบ และ Deadline ให้ครบก่อนส่ง</div></div></div><div class="fm">
-<label>ไลน์<select id="fl">${opt(lo,0)}</select></label>
-<label>พื้นที่<select id="fz">${opt(Z.map((z,i)=>[i,z]),0)}</select></label>
-<label>หมวด 6S<select id="fs">${opt(S.map((z,i)=>[i,z]),0)}</select></label>
-<label>ความรุนแรง<select id="fv">${opt(['สูง','กลาง','ต่ำ'].map(x=>[x,x]),'กลาง')}</select></label>
-<label>ผู้ตรวจ<input id="fa" placeholder="ชื่อผู้ Audit"></label>
-<label>กำหนดตอบ/แก้ไข<input id="fd" type="date" value="${addD(7)}"></label></div>
-<label class="mu" style="display:block;margin-top:11px">รายละเอียดปัญหาที่พบ<textarea id="ft" rows="3" placeholder="อธิบายสภาพปัญหา จุดที่พบ และสิ่งที่ต้องการให้แก้ไข"></textarea></label>
-<label class="mu" style="display:block;margin-top:9px">รูปถ่ายปัญหาที่พบ (บังคับ)<input type="file" accept="image/*" onchange="pickPh('add',this)"></label><div id="pv-add">${phHTML('add')}</div>
-<div class="ib"><button class="btn p" id="bt-add" onclick="addIss()" ${PH.add?'':'disabled'}>บันทึก Issue</button><span class="mu" id="hn-add" style="${PH.add?'display:none':''}">ต้องแนบรูปก่อนจึงจะบันทึกได้</span></div></div>
-<div class="table-title" style="margin-top:22px"><div><b>Issue Tracking</b><div class="mu">ค้นหาและกรองรายการที่ต้องติดตาม</div></div><span>${list.length} / ${ISS.length} รายการ</span></div>
-<div class="filterbar"><input class="search" value="${esc(FL.q||'')}" placeholder="ค้นหา Issue ID, Line, ผู้รับผิดชอบ หรือรายละเอียด..." onchange="FL.q=this.value;FOCUS_ID=null;draw()"><select onchange="FL.l=this.value;FOCUS_ID=null;draw()">${opt([['all','ทุกไลน์'],...lo],FL.l)}</select><select onchange="FL.st=this.value;FOCUS_ID=null;draw()">${opt([['all','ทุกสถานะ'],['open','รอตอบ'],['replied','รอ Audit ยืนยัน'],['closed','ปิดแล้ว']],FL.st)}</select><select onchange="FL.sev=this.value;FOCUS_ID=null;draw()">${opt([['all','ทุกระดับ'],['สูง','สูง'],['กลาง','กลาง'],['ต่ำ','ต่ำ']],FL.sev)}</select><select onchange="FL.cat=this.value;FOCUS_ID=null;draw()">${opt([['all','ทุกหมวด'],...S.map((z,i)=>[i,z])],FL.cat)}</select><button class="btn" onclick="FL={l:'all',st:'all',sev:'all',cat:'all',q:''};FOCUS_ID=null;draw()">ล้างตัวกรอง</button></div>
-${list.length?list.map(i=>{const u=uOf(i)||{},tl=(u.tl||[])[i.z]||'—';return `<div id="issue-${i.id}" class="card iss issue-card ${i.st} ${FOCUS_ID==i.id?'focused':''}"><div class="issue-head"><div class="issue-title"><b>#${i.id} · ${lnI(i)} · ${Z[i.z]}</b><div class="mu">${S[i.s]}</div></div><div class="issue-tags"><span class="badge st-${i.st}">${stT[i.st]}</span><span class="badge ${i.sev=='สูง'?'D':i.sev=='กลาง'?'C':'B'}">${i.sev}</span>${late(i)?'<span class="badge st-open">OVERDUE</span>':''}</div></div>
-<div class="issue-desc">${esc(i.desc)}</div>${photoHTML(i.img,'รูปปัญหา')}
-<div class="issue-meta"><div class="meta-box"><span>ผู้ตรวจ</span><b>${esc(i.auditor||'-')}</b></div><div class="meta-box"><span>วันที่พบ</span><b>${i.date||'—'}</b></div><div class="meta-box"><span>Deadline</span><b style="${late(i)?'color:var(--D)':''}">${i.due||'—'}</b></div><div class="meta-box"><span>ผู้รับผิดชอบ</span><b>TL ${esc(tl)} / Sup ${esc(u.sup||'—')}</b></div></div>
-${i.st=='open'?`<textarea id="r${i.id}" rows="3" placeholder="TL ตอบ: สาเหตุ / การแก้ไข / วิธีป้องกันไม่ให้เกิดซ้ำ" style="margin-top:11px"></textarea><label class="mu" style="display:block;margin-top:7px">รูปถ่ายหลังแก้ไข (บังคับ)<input type="file" accept="image/*" onchange="pickPh('r${i.id}',this)"></label><div id="pv-r${i.id}">${phHTML('r'+i.id)}</div><div class="ib"><button class="btn p" id="bt-r${i.id}" onclick="rep(${i.id})" ${PH['r'+i.id]?'':'disabled'}>ส่งคำตอบเพื่อรอ Audit</button><span class="mu" id="hn-r${i.id}" style="${PH['r'+i.id]?'display:none':''}">ต้องแนบรูปก่อนจึงจะส่งคำตอบได้</span></div>`
-:`<div class="card" style="margin-top:10px;background:var(--soft);box-shadow:none"><span class="mu">Corrective Action${i.by?' · โดย '+esc(i.by):''}</span><br>${esc(i.reply)}${photoHTML(i.rimg,'รูปหลังแก้ไข')}</div><div class="ib">${i.st=='replied'?`<button class="btn p" onclick="stI(${i.id},'closed')">✓ ยืนยันปิด Issue</button><button class="btn" onclick="stI(${i.id},'open')">↩ ตีกลับให้แก้ไข</button>`:`<button class="btn" onclick="stI(${i.id},'open')">เปิด Issue ใหม่</button>`}</div>`}
-<div class="ib"><button class="btn" style="color:var(--D)" onclick="delIss(${i.id})">ลบ Issue นี้</button></div></div>`}).join(''):'<div class="card empty-state"><div class="ico">⌕</div><b>ไม่พบ Issue ตามตัวกรอง</b><div class="mu">ลองเปลี่ยน Line, Status, Severity หรือคำค้นหา</div></div>'}
-<div class="section-note"><span>% ปิด = Audit ยืนยันปิด ÷ Issue ทั้งหมด</span><span>รายการ Overdue และ Severity สูงจะแสดงก่อน</span></div>`}
+<section class="pn" style="margin-bottom:14px"><div class="pn-h"><div><h2>Closure rate แยกตามพื้นที่</h2><p>จำนวนที่ปิด / ทั้งหมด และงานเกินกำหนดของแต่ละพื้นที่</p></div><span class="aside">${D.length} ไลน์ / กะ</span></div><div class="sc"><table><thead><tr><th>ไลน์</th>${Z.map(z=>`<th>${z}</th>`).join('')}<th>รวมไลน์</th></tr></thead><tbody>
+${D.map((_,l)=>`<tr><td><b>${esc(ln(l))}</b></td>${Z.map((_,z)=>{const x=ist(l,z);return `<td>${x.t?x.c+'/'+x.t+' ':''}${ichip(x.p)}${x.od?` <span class="badge st-open">เกิน ${x.od}</span>`:''}</td>`}).join('')}<td>${(()=>{const x=ist(l);return (x.t?x.c+'/'+x.t+' ':'')+ichip(x.p)})()}</td></tr>`).join('')}</tbody></table></div></section>
+${form}
+<section class="sec" style="margin-top:8px"><div class="list-h"><div><h2>รายการ Issue</h2><p class="mu">ค้นหาและกรองรายการที่ต้องติดตาม</p></div><span class="mu" id="issn">${list.length} / ${ISS.length} รายการ</span></div>
+<div class="fbar"><div class="srch">${ico('search',18)}<input class="in" type="search" aria-label="ค้นหา Issue" value="${esc(FL.q||'')}" placeholder="ค้นหา Issue ID, Line, ผู้รับผิดชอบ หรือรายละเอียด" oninput="FL.q=this.value;FOCUS_ID=null;refList()"></div>
+<select class="in" aria-label="กรองตามไลน์" onchange="FL.l=this.value;FOCUS_ID=null;refList()">${opt([['all','ทุกไลน์'],...lo],FL.l)}</select>
+<select class="in" aria-label="กรองตามสถานะ" onchange="FL.st=this.value;FOCUS_ID=null;refList()">${opt([['all','ทุกสถานะ'],['open','รอตอบ'],['replied','รอ Audit ยืนยัน'],['closed','ปิดแล้ว']],FL.st)}</select>
+<select class="in" aria-label="กรองตามความรุนแรง" onchange="FL.sev=this.value;FOCUS_ID=null;refList()">${opt([['all','ทุกระดับ'],['สูง','สูง'],['กลาง','กลาง'],['ต่ำ','ต่ำ']],FL.sev)}</select>
+<select class="in" aria-label="กรองตามหมวด 6S" onchange="FL.cat=this.value;FOCUS_ID=null;refList()">${opt([['all','ทุกหมวด'],...S.map((z,i)=>[i,z])],FL.cat)}</select>
+<button class="btn" onclick="FL={l:'all',st:'all',sev:'all',cat:'all',q:''};FOCUS_ID=null;draw()">ล้างตัวกรอง</button></div>
+<div id="issl">${issListHTML(list)}</div>
+<div class="note"><span>% ปิด = Audit ยืนยันปิด ÷ Issue ทั้งหมด</span><span>รายการเกินกำหนดและความรุนแรงสูงแสดงก่อน</span></div></section>`}
 const DEL_HASH='74cf43e9bfa9d9c486cc921ae9381bb88498b414f6e3b968b1606e705eacbc2b';
 const sha=async t=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')};
-function askPw(msg){return new Promise(ok=>{const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:99';
-d.innerHTML='<div class="card" style="width:min(340px,92%)"><b>'+msg+'</b><input type="password" id="pwi" autocomplete="off" style="width:100%;margin-top:10px;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)"><div class="ib"><button class="btn p" id="pwo">ยืนยัน</button><button class="btn" id="pwc">ยกเลิก</button></div></div>';
-document.body.appendChild(d);const i=d.querySelector('#pwi');i.focus();const done=v=>{d.remove();ok(v)};
-d.querySelector('#pwo').onclick=()=>done(i.value);d.querySelector('#pwc').onclick=()=>done(null);i.onkeydown=e=>{if(e.key=='Enter')done(i.value);if(e.key=='Escape')done(null)}})}
-async function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
-const pw=await askPw('กรอกรหัสเพื่อลบ Issue #'+id);if(pw==null)return;
-let okp=false;try{okp=(await sha(pw))===DEL_HASH}catch(e){alert('เบราว์เซอร์นี้ตรวจรหัสไม่ได้ (ต้องเปิดผ่าน https)');return}
-if(!okp){alert('รหัสไม่ถูกต้อง');return}
-if(!confirm('ลบ Issue #'+id+' ('+lnI(i)+' · '+Z[i.z]+') ?\nแถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้'))return;
+function delIss(id){const i=ISS.find(x=>x.id==id);if(!i)return;
+const m=openModal(`<h3 id="mdt">ลบ Issue #${id}</h3><p class="mu" style="margin-bottom:12px">${esc(lnI(i))} ${Z[i.z]}<br>แถวนี้ใน Google Sheet จะถูกลบด้วย และกู้คืนไม่ได้</p><div class="fld"><label for="pwi">กรอกรหัสเพื่อยืนยัน</label><input class="in" type="password" id="pwi" autocomplete="off"></div><div class="mdl-err" id="pwe" role="alert"></div><div class="ib"><button class="btn p dn" id="pwo">ลบถาวร</button><button class="btn" id="pwc">ยกเลิก</button></div>`);
+const inp=m.el.querySelector('#pwi'),err=m.el.querySelector('#pwe');inp.focus();
+const run=async()=>{let okp=false;try{okp=(await sha(inp.value))===DEL_HASH}catch(e){err.textContent='เบราว์เซอร์นี้ตรวจรหัสไม่ได้ (ต้องเปิดผ่าน https)';return}
+if(!okp){err.textContent='รหัสไม่ถูกต้อง';inp.select();return}
+m.close();
 ISS=ISS.filter(x=>x.id!=id);
 if(DB){try{DB.collection('issues').doc(String(id)).delete().catch(wf)}catch(e){wf(e)}}
-saveI();SY.dirty.is=1;if(SY.on)schedPush('is');else alert('ยังไม่ได้เปิดซิงก์ Sheet จึงลบเฉพาะในเครื่องนี้ (แถวใน Sheet ยังอยู่)');draw()}
-function addIss(){const g=id=>document.getElementById(id).value,t=g('ft').trim();if(!t){alert('กรุณากรอกรายละเอียดปัญหา');return}if(!PH.add){alert('กรุณาแนบรูปถ่ายปัญหาก่อนบันทึก');return}
-const u=D[+g('fl')];if(!u){alert('ยังไม่มีไลน์ในแท็บ Scores ของ Sheet');return}
-const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:u.line-1,sh:u.shift,z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;ISS.push(ni);saveI(ni);draw()}
-function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){alert('กรุณากรอกคำตอบ');return}if(!PH['r'+id]){alert('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];i.reply=t;i.by=who();i.st='replied';saveI(i);draw()}
+saveI();SY.dirty.is=1;if(SY.on)schedPush('is');else toast('ยังไม่ได้เปิดซิงก์ Sheet จึงลบเฉพาะในเครื่องนี้ (แถวใน Sheet ยังอยู่)','err');draw()};
+m.el.querySelector('#pwo').onclick=run;m.el.querySelector('#pwc').onclick=m.close;inp.onkeydown=e=>{if(e.key=='Enter')run()}}
+function addIss(){const g=id=>document.getElementById(id).value,t=g('ft').trim();if(!t){toast('กรุณากรอกรายละเอียดปัญหา','err');return}if(!PH.add){toast('กรุณาแนบรูปถ่ายปัญหาก่อนบันทึก','err');return}
+const u=D[+g('fl')];if(!u){toast('ยังไม่มีไลน์ในแท็บ Scores ของ Sheet','err');return}
+const ni={id:Math.max(0,...ISS.map(i=>i.id))+1,l:u.line-1,sh:u.shift,z:+g('fz'),s:+g('fs'),sev:g('fv'),desc:t,auditor:g('fa').trim()||ME,date:todayS(),due:g('fd')||addD(7),st:'open',reply:'',img:PH.add};PH.add=null;['fl','fz','fs','fv','fa','fd','ft'].forEach(k=>delete FD[k]);UI.form=false;ISS.push(ni);saveI(ni);draw();toast('บันทึก Issue #'+ni.id+' แล้ว')}
+function rep(id){const t=document.getElementById('r'+id).value.trim();if(!t){toast('กรุณากรอกคำตอบ','err');return}if(!PH['r'+id]){toast('กรุณาแนบรูปถ่ายหลังแก้ไขก่อนส่งคำตอบ','err');return}const i=ISS.find(x=>x.id==id);i.rimg=PH['r'+id];delete PH['r'+id];delete FD['r'+id];i.reply=t;i.by=who();i.st='replied';saveI(i);draw();toast('ส่งคำตอบ Issue #'+id+' แล้ว รอ Audit ยืนยัน')}
 function stI(id,st){const i=ISS.find(x=>x.id==id);i.st=st;saveI(i);draw()}
 
 const SHEET_URL='https://docs.google.com/spreadsheets/d/1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A/edit';
@@ -295,20 +755,20 @@ let pr=0;if(prune){const keep=ISS.filter(x=>seen.has(x.id));pr=ISS.length-keep.l
 return 'นำเข้า Issue: เพิ่มใหม่ '+add+' · อัปเดต '+upd+(pr?' · ลบที่ไม่มีใน Sheet '+pr:'')+(bad.length?' · ข้าม '+bad.length+' แถว ('+bad.slice(0,5).join(', ')+')':'')}
 function sh(){
 const ex=toText(SH.ek=='sc'?scoreRows():issueRows(),'\t');
-const sel=(k,v)=>`<select onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 6S (ตามไลน์/กะใน Sheet)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
-return `<div class="card"><b>0) เชื่อมอัตโนมัติด้วย Google Apps Script</b> <span class="mu">(ใช้เมื่อโฮสต์นอก Claude เช่น GitHub Pages)</span>
-<div class="fm" style="grid-template-columns:1fr"><label>Web App URL (ฝังไว้ให้แล้ว แก้ได้)<input id="apiu" value="${esc(API.u)}"></label></div>
+const sel=(k,v)=>`<select class="in" style="width:auto;min-width:250px" aria-label="ชุดข้อมูล" onchange="SH.${k}=this.value;draw()"><option value="sc" ${v=='sc'?'selected':''}>คะแนน 6S (ตามไลน์/กะใน Sheet)</option><option value="is" ${v=='is'?'selected':''}>Issue จาก Audit</option></select>`;
+return `<section class="pn" style="margin-bottom:14px"><div class="pn-h"><div><h2>เชื่อม Google Sheet อัตโนมัติ</h2><p>ใช้เมื่อโฮสต์นอก Claude เช่น GitHub Pages ผ่าน Google Apps Script</p></div></div>
+<div class="fld"><label for="apiu">Web App URL <span class="mu">(ตั้งค่าไว้ให้แล้ว แก้ได้)</span></label><input class="in" id="apiu" value="${esc(API.u)}"></div>
 <div class="ib"><button class="btn p" onclick="saveApi()">บันทึกและเปิดซิงก์</button></div>
-<div class="mu">ข้อมูลใน Sheet คือศูนย์กลางที่ทุกคนใช้ร่วมกัน รูปเก็บในโฟลเดอร์ Drive · วิธีติดตั้งดูในไฟล์ apps-script.gs</div></div>
-<h2>1) Export: Dashboard → Google Sheet</h2><div class="card"><div class="mu" style="display:none"></div><div class="mu">เลือกชุดข้อมูล แล้วคัดลอกไปวางที่เซลล์ A1 ของแท็บใน Sheet (แนะนำตั้งชื่อแท็บ Scores และ Issues) หรือดาวน์โหลด CSV แล้วใช้ ไฟล์ → นำเข้า ใน Sheet</div>
-<div class="ib">${sel('ek',SH.ek)}<button class="btn p" onclick="cp(this)">คัดลอก (วางใน Sheet ได้เลย)</button><button class="btn" onclick="dl()">ดาวน์โหลด CSV</button><a class="btn" href="${SHEET_URL}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit">เปิด Google Sheet ↗</a></div>
-<textarea id="exp" rows="6" readonly style="margin-top:8px;font-size:12px;white-space:pre">${esc(ex)}</textarea></div>
-<h2>2) Import: Google Sheet → Dashboard</h2><div class="card"><div class="mu">ใน Sheet เลือกช่วงข้อมูลรวมหัวตาราง (คอลัมน์ตามที่ Export) กด Ctrl+C แล้ววางในช่องด้านล่าง หรือเลือกไฟล์ CSV ที่ดาวน์โหลดจาก Sheet</div>
-<div class="ib">${sel('ik',SH.ik)}<input type="file" accept=".csv,.tsv,.txt" onchange="ldf(this)"></div>
-<textarea id="imp" rows="6" placeholder="วางข้อมูลจาก Sheet ที่นี่" style="margin-top:8px;font-size:12px"></textarea>
+<p class="hint" style="margin-top:12px">ข้อมูลใน Sheet คือศูนย์กลางที่ทุกคนใช้ร่วมกัน รูปเก็บในโฟลเดอร์ Drive วิธีติดตั้งดูในไฟล์ apps-script.gs</p></section>
+<section class="pn" style="margin-bottom:14px"><div class="pn-h"><div><h2>ส่งออก: Dashboard ไป Google Sheet</h2><p>เลือกชุดข้อมูล แล้วคัดลอกไปวางที่เซลล์ A1 ของแท็บใน Sheet (แนะนำตั้งชื่อแท็บ Scores และ Issues) หรือดาวน์โหลด CSV แล้วใช้เมนู ไฟล์ แล้วเลือก นำเข้า ใน Sheet</p></div></div>
+<div class="ib" style="margin-top:0">${sel('ek',SH.ek)}<button class="btn p" onclick="cp(this)">${ico('copy',16)}คัดลอก (วางใน Sheet ได้เลย)</button><button class="btn" onclick="dl()">${ico('down',16)}ดาวน์โหลด CSV</button><a class="btn" href="${SHEET_URL}" target="_blank" rel="noopener">เปิด Google Sheet${ico('ext',15)}</a></div>
+<textarea class="in mono" id="exp" rows="6" readonly style="margin-top:12px">${esc(ex)}</textarea></section>
+<section class="pn"><div class="pn-h"><div><h2>นำเข้า: Google Sheet ไป Dashboard</h2><p>ใน Sheet เลือกช่วงข้อมูลรวมหัวตาราง (คอลัมน์ตามที่ส่งออก) กด Ctrl+C แล้ววางในช่องด้านล่าง หรือเลือกไฟล์ CSV ที่ดาวน์โหลดจาก Sheet</p></div></div>
+<div class="ib" style="margin-top:0">${sel('ik',SH.ik)}<label class="fbtn">${ico('up',18)}<span>เลือกไฟล์ CSV</span><input type="file" accept=".csv,.tsv,.txt" onchange="ldf(this)"></label></div>
+<textarea class="in mono" id="imp" rows="6" placeholder="วางข้อมูลจาก Sheet ที่นี่" style="margin-top:12px"></textarea>
 <div class="ib"><button class="btn p" onclick="doImp()">นำเข้าข้อมูล</button></div>
-${SH.msg?`<div class="card" style="margin-top:8px;background:var(--bg)">${esc(SH.msg)}</div>`:''}</div>
-<div class="mu" style="margin-top:10px">คะแนนใช้คีย์ Line + Shift + Zone จับคู่แถว (แก้ 1S–6S, ชื่อ Supervisor/TeamLeader ได้) · Issue ใช้ ID จับคู่ ถ้า ID ว่างหรือไม่ตรงจะเพิ่มเป็น Issue ใหม่ · Status ใช้ open / replied / closed · คอลัมน์ Area% ไม่ถูกนำเข้า (คำนวณใหม่เอง)</div>`}
+${SH.msg?`<div class="res" role="status">${esc(SH.msg)}</div>`:''}
+<p class="hint" style="margin-top:12px;max-width:80ch">คะแนนใช้คีย์ Line + Shift + Zone จับคู่แถว (แก้ 1S–6S และชื่อ Supervisor / TeamLeader ได้) Issue ใช้ ID จับคู่ ถ้า ID ว่างหรือไม่ตรงจะเพิ่มเป็น Issue ใหม่ Status ใช้ open / replied / closed คอลัมน์ Area% ไม่ถูกนำเข้าเพราะคำนวณใหม่เอง</p></section>`}
 function cp(b){const t=document.getElementById('exp');t.select();const ok=()=>{b.textContent='คัดลอกแล้ว ✓'};try{navigator.clipboard.writeText(t.value).then(ok,()=>{document.execCommand('copy');ok()})}catch(e){document.execCommand('copy');ok()}}
 async function dl(){const k=SH.ek,t=toText(k=='sc'?scoreRows():issueRows(),',');let dm=null;try{dm=window.claude?await claude.use('downloads'):null}catch(e){}
 if(!dm){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+t],{type:'text/csv'}));a.download=(k=='sc'?'5s-scores':'5s-issues')+'.csv';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
@@ -316,12 +776,15 @@ try{await dm.save({filename:(k=='sc'?'5s-scores':'5s-issues')+'.csv',data:'\uFEF
 function ldf(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{document.getElementById('imp').value=r.result};r.readAsText(f)}
 function doImp(){const t=document.getElementById('imp').value;if(!t.trim()){SH.msg='ยังไม่มีข้อมูลให้นำเข้า';draw();return}
 SH.msg=SH.ik=='sc'?impScores(t):impIssues(t);draw()}
-function draw(){if(cur>=D.length)cur=0;nav();document.getElementById('m').innerHTML=(['ov','dt','rk'].includes(tab)&&!D.length?empty():{ov,dt,rk,iss,sh}[tab]())}
+const acts={iss:()=>`<button class="btn p" onclick="toggleForm()" aria-expanded="${UI.form}">${ico(UI.form?'x':'plus',16)}${UI.form?'ปิดฟอร์ม':'สร้าง Issue ใหม่'}</button>`};
+function draw(){if(cur>=D.length)cur=0;nav();const y=window.scrollY;
+document.getElementById('m').innerHTML=pgh(tab,acts[tab]?acts[tab]():'')+((['ov','dt','rk'].includes(tab)&&!D.length)?empty():{ov,dt,rk,iss,sh}[tab]());
+window.scrollTo(0,y)}
 (async()=>{try{
 if(!window.claude)return;
 const u=await claude.use("user");if(u){const m=await u.me();ME=m.name||''}
 const db=await claude.use("db");if(!db)return;
-DB=db;ISS=[];document.getElementById('mode').textContent='🟢 ข้อมูลร่วม ทุกคนเห็นตรงกัน';
+DB=db;ISS=[];MODE_SHARED=true;setMode('ข้อมูลร่วม ทุกคนเห็นตรงกัน');setSy();
 const busy=()=>/^(TEXTAREA|INPUT|SELECT)$/.test((document.activeElement||{}).tagName);
 db.collection('issues').onSnapshot(q=>{ISS=q.docs.map(d=>d.data());if(!busy())draw()},console.error);
 }catch(e){console.error(e)}})();
@@ -350,7 +813,7 @@ const SID='1sbt8KSnrQ_bWRVSWQ66hv_aXEm7GGshoqxAoiQT5f6A',SRV='Google Sheets';
 const SK={sc:{ro:true,tab:'Scores',rng:'A1:L200',rows:()=>scoreRows()},is:{tab:'Issues',rng:'A1:Q1000',rows:()=>issueRows()}};
 let SY={n:{},loaded:{},block:{},dirty:{},importing:false,on:false,st:'',mcp:null,keys:{},hs:{sc:'',is:''},at:{sc:0,is:0},unsub:[],t:null};
 const nrm=rows=>JSON.stringify(rows.map(r=>{r=r.map(c=>String(c==null?'':c));while(r.length&&r[r.length-1]==='')r.pop();return r}).filter(r=>r.length));
-function setSy(t){if(t!=null)SY.st=t;const e=document.getElementById('sy');if(e)e.textContent=SY.st;const b=document.getElementById('syb');if(b)b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet'}
+function setSy(t){if(t!=null)SY.st=t;document.querySelectorAll('.js-sy').forEach(e=>e.textContent=SY.st);document.querySelectorAll('.js-syb').forEach(b=>b.textContent=SY.on?'ปิดซิงก์ Sheet':'เปิดซิงก์ Google Sheet');document.documentElement.dataset.sync=(SY.on||MODE_SHARED)?'on':'off'}
 async function sargs(tool,o){if(!SY.keys[tool]){try{const d=await SY.mcp.describeTool(SRV,tool);SY.keys[tool]=Object.keys((d.inputSchema&&d.inputSchema.properties)||{})}catch(e){SY.keys[tool]=['spreadsheetId']}}
 const sn=SY.keys[tool].includes('spreadsheet_id'),a=sn?{spreadsheet_id:SID,range:o.range}:{spreadsheetId:SID,range:o.range};if(o.values)a.values=o.values;return a}
 function valsOf(res){const v=x=>x&&Array.isArray(x.values)?x.values:null;let a=v(res.structuredContent)||v(res.payload);
@@ -378,12 +841,14 @@ SY.on=true;try{localStorage.setItem('s5sync','1')}catch(e){}setSy('กำลั�
 try{const pm=await claude.use('permissions');if(pm){const st=await pm.state('mcp:'+SRV);if(st=='prompt')await pm.request(['mcp:'+SRV])}}catch(e){}
 try{for(const k of ['sc','is']){const a=await sargs('get_values',{range:SK[k].tab+'!'+SK[k].rng});
 SY.unsub.push(SY.mcp.watchTool(SRV,'get_values',a,ev=>onEv(k,ev),{cache:{staleTime:5000},refetchInterval:30000}))}}catch(e){SY.on=false;setSy(errT(e)+(e&&e.message?' · '+e.message:''));showFix(e)}}
-async function showFix(e){const b=document.getElementById('syf');if(b)b.style.display=e&&(e.code=='not_in_manifest'||e.code=='not_granted'||e.code=='consent_required')?'inline-block':'none';
+async function showFix(e){document.querySelectorAll('.js-syf').forEach(b=>{b.style.display=e&&(e.code=='not_in_manifest'||e.code=='not_granted'||e.code=='consent_required')?'inline-flex':'none'});
 if(e&&e.code=='not_in_manifest'&&SY.mcp){try{const l=await SY.mcp.listTools();setSy(SY.st+' · connector ที่เห็น: '+(l.servers.map(x=>x.server).join(', ')||'ไม่มี'))}catch(x){}}}
 function syncOff(){SY.on=false;SY.unsub.forEach(f=>{try{f()}catch(e){}});SY.unsub=[];try{localStorage.removeItem('s5sync')}catch(e){}setSy('ปิดซิงก์แล้ว')}
 async function permFix(){try{const pm=await claude.use('permissions');if(pm)await pm.manage()}catch(e){}}
 function toggleSync(){SY.on?syncOff():syncOn()}
 try{if(!window.claude||localStorage.getItem('s5sync')=='1')setTimeout(syncOn,1500)}catch(e){}
 
+document.querySelectorAll('.js-sync').forEach(e=>e.innerHTML=syncHTML);applyTheme(document.documentElement.dataset.theme||'light');
+try{matchMedia('(max-width:699px)').addEventListener('change',()=>{if(tab=='ov')draw()})}catch(e){}
 draw();setSy();
 </script></body></html>
